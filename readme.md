@@ -50,8 +50,10 @@ The roadmap for short term period is:
  * Creation of temporary ERC20 token (HYST) for period while the DEX is in development; - 10.07.2019 
  * Launching of token trading on EX (HYST/BTC); - 15.07.2019
  * EX documentation; - 25.07.2019
+ * Fees system; - 30.07.2019
+ * Referral program; - 05.08.2019
  
-## Dex functionality
+## DEX functionality
 
 long term plans:
 
