@@ -1,0 +1,18 @@
+
+@import '~vue-awesome-notifications/dist/styles/style.scss';
+@import "theme/chart.scss";
+@import "theme/theme.scss";
+
+body {
+  color: #1e1e1e;
+  background-color: #fff;
+}
+
+.navbar-header h1 {
+  font-size: 22px;
+  color: black;
+}
+
+.phone-message {
+  display: none;
+}

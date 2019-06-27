@@ -1,0 +1,781 @@
+<template>
+    <div class="content trade-app">
+        <div class="row">
+            <div class="col-lg-9">
+                <div class="info-block">
+                    <table title="24 hours"  width="100%">
+                        <tbody class="table-no-bordered">
+                            <tr>
+                                <td>Hight: {{h24}}</td>
+                                <td>Low: {{l24}}</td>
+                                <td><strong>Last: {{ last_price }}</strong></td>
+                                <td>Volume: {{ daily_volume }}</td>
+                                <td>
+                                    <div class="pull-right periods">
+                                        <small>
+                                            <a href="javascript:" v-for="(item, key, index) in timePeriods" @click="chart_period=key" v-bind:class="{ active: (key==chart_period) }"> {{item}}</a>
+                                        </small>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div style="clear: both;"></div>
+
+                <section id="chart" class="chart" ref="chartdiv">
+
+                </section>
+
+                <div style="clear: both;"></div>
+
+                <div class="row">
+                    <div class="col-md-12" v-if="bid_sizePercent > 0 && ask_sizePercent > 0">
+                        <div class="volume-line">
+                            <div class="bid-volume" v-bind:style="'width: ' + bid_sizePercent + '%'">{{ bid_size }} {{ secondary_asset }}</div>
+                            <div class="ask-volume" v-bind:style="'width: ' + ask_sizePercent + '%'">{{ ask_size }} {{ secondary_asset }}</div>
+                        </div>
+                        <br />
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-5 volume-items left-volume">
+                        <h3>
+                            <div class="pull-left">BID <small><small>offers to buy</small></small></div>
+                            <div class="pull-right"><small>{{ primary_asset_volume }} {{ primary_asset }}</small></div>
+                        </h3>
+                        <div style="clear: both;"></div>
+                        <div class="trade-table-container">
+                            <table class="table table-hover trade-table bid-table table-striped trade-table dataTable">
+                                <thead>
+                                    <tr>
+                                        <th>Cost {{ primary_asset }}</th>
+                                        <th>Size {{ secondary_asset }}</th>
+                                        <th>Price</th>
+                                        <th>Sell</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-if="!bid_list.data | !bid_list.data.length">
+                                        <td colspan="4">Empty</td>
+                                    </tr>
+
+                                    <tr v-for="item in bid_list.data"  :title="'Orders count: ' + item.count">
+                                        <td>{{ item.cost_remain }} </td>
+                                        <td>{{ item.quantity_remain }} </td>
+                                        <td>
+                                            <strong>{{ item.price }}</strong>
+                                            <i v-if="item.my" class="my-order glyphicon glyphicon-user"></i>
+                                        </td>
+                                        <td><a href="javascript:" @click="setPrice(bid_list.data, item.price)"> <i class="glyphicon glyphicon-ok"></i></a></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <div class="orders-pagination">
+                                <pagination :data="Object.assign({}, bid_list)" @pagination-change-page="getBuyOrders"></pagination>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2 add-order">
+                        <h3>Order <small><small>your new offer</small></small></h3>
+                        <div class="">
+                            <label style="width: 100%;">
+                                {{ secondary_asset }} quantity <small v-if="secondary_asset_data && secondary_asset_data.min_trade_amount"> (min {{ secondary_asset_data.min_trade_amount }})</small>
+                                <input type="text" :title="'Balance: ' + primary_asset_balance" v-model="order_quantity" class="form-control" @blur="calculate" />
+                            </label>
+                            <label style="width: 100%;">
+                                {{ primary_asset }} price  <small v-if="secondary_asset_data && secondary_asset_data.min_price"> (min {{ secondary_asset_data.min_price }})</small>
+                                <input type="text" v-model="order_price" class="form-control" @blur="calculate" />
+                            </label>
+                            <label style="width: 100%;">
+                                {{ primary_asset }} cost
+                                <input type="text"  :title="'Balance: ' + secondary_asset_balance" v-model="secondary_asset_quantity" disabled class="form-control" />
+                            </label>
+                            <div style="clear: both"></div>
+
+                            <button class="btn btn-success pull-left" @click="buy"><i class="glyphicon glyphicon-chevron-left"></i> Buy</button>
+                            <button class="btn btn-danger pull-right" @click="sell">Sell <i class="glyphicon glyphicon-chevron-right"></i></button>
+
+                        </div>
+                    </div>
+                    <div class="col-md-5 volume-items right-volume">
+                        <h3>
+                            <div class="pull-right">ASK <small><small>offers to sell</small></small></div>
+                            <div class="pull-left"><small>{{ secondary_asset_volume }} {{ secondary_asset }}</small></div>
+                        </h3>
+                        <div style="clear: both;"></div>
+                        <div class="trade-table-container">
+                            <table class="table table-hover trade-table ask table-striped trade-table dataTable">
+                                <thead>
+                                    <tr>
+                                        <th>Buy</th>
+                                        <th>Price</th>
+                                        <th>Size {{ secondary_asset }}</th>
+                                        <th>Cost {{ primary_asset }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-if="!ask_list.data | !ask_list.data.length">
+                                        <td colspan="4">Empty</td>
+                                    </tr>
+                                    <tr v-for="item in ask_list.data" :title="'Orders count: ' + item.count">
+                                        <td><a href="javascript:" @click="setPrice(ask_list.data, item.price)"><i class="glyphicon glyphicon-ok"></i></a></td>
+                                        <td>
+                                            <strong>{{ item.price }}</strong>
+                                            <i v-if="item.my" class="my-order glyphicon glyphicon-user"></i>
+                                        </td>
+                                        <td>{{ item.quantity_remain }} </td>
+                                        <td>{{ item.cost_remain }} </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="orders-pagination">
+                            <pagination :data="Object.assign({}, ask_list)" @pagination-change-page="getSellOrders"></pagination>
+                        </div>
+                    </div>
+                </div>
+                <hr />
+                <div class="trade-statistics">
+                    <h3>My active orders</h3>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h4>BID <small><small>offers to buy</small></small></h4>
+                            <table class="table table-hover trade-table ask-table stat-table">
+                                <thead>
+                                <tr>
+                                    <th>Price</th>
+                                    <th>Quantity</th>
+                                    <th>Remain</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                    <th>&nbsp;</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr v-if="!my_buy_orders_list | !my_buy_orders_list.length">
+                                    <td colspan="6">Empty</td>
+                                </tr>
+                                <tr v-for="item in my_buy_orders_list">
+                                    <td><strong>{{ item.price }}</strong></td>
+                                    <td>{{ item.quantity }}</td>
+                                    <td>{{ item.quantity_remain }}</td>
+                                    <td>{{ item.status }}</td>
+                                    <td>{{ item.created_at }}</td>
+                                    <td><a href="javascript:" style="color: red;" @click="removeOrder(item.id)"><i class="glyphicon glyphicon-remove"></i></a></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <h4>ASK <small><small>offers to sell</small></small></h4>
+                            <table class="table table-hover trade-table ask-table stat-table">
+                                <thead>
+                                <tr>
+                                    <th>Quantity</th>
+                                    <th>Remain</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                    <th>Price</th>
+                                    <th>&nbsp;</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr v-if="!my_sell_orders_list | !my_sell_orders_list.length">
+                                    <td colspan="6">Empty</td>
+                                </tr>
+                                <tr v-for="item in my_sell_orders_list">
+                                    <td>{{ item.quantity }}</td>
+                                    <td>{{ item.quantity_remain }}</td>
+                                    <td>{{ item.status }}</td>
+                                    <td>{{ item.created_at }}</td>
+                                    <td><strong>{{ item.price }}</strong></td>
+                                    <td><a href="javascript:" style="color: red;" @click="removeOrder(item.id)"><i class="glyphicon glyphicon-remove"></i></a></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="left-block">
+                    <div class="">
+                        <ul class="nav nav-tabs card-header-tabs">
+                            <li class="nav-item active">
+                                <a class="nav-link active" data-toggle="tab" href="#primary-asset">{{ primary_asset }}</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-toggle="tab" href="#secondary-asset">{{ secondary_asset }}</a>
+                            </li>
+                        </ul>
+                        <div class="tab-content">
+                            <div class="tab-pane active" id="primary-asset">
+                                <table class="table table-stripped trade-table table-bordered">
+                                    <thead>
+                                    <tr>
+                                        <th>Balance</th>
+                                        <th title="Unconfirmed balance">Unc. balance</th>
+                                        <th>In orders</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td width="40%">{{ primary_asset_balance }}</td>
+                                        <td>{{ primary_asset_unc_balance }}</td>
+                                        <td>{{ primary_asset_io_balance }}</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                                <div style="clear: both;"></div>
+                                <div class="balance-buttons text-center" v-if="primary_asset_data">
+                                    <a :href="route('app.balances.deposit', {code: primary_asset_data.id})" class="btn btn-success" title="deposit" target="_blank">Deposit <i class="glyphicon glyphicon-log-in"></i></a>
+                                    <a :href="route('app.balances.withdrawal', {code: primary_asset_data.id})" class="btn" title="withdrawal" target="_blank">Withdrawal <i class="glyphicon glyphicon-log-out"></i></a>
+                                </div>
+                            </div>
+                            <div class="tab-pane" id="secondary-asset">
+                                <table class="table table-stripped trade-table table-bordered">
+                                    <thead>
+                                    <tr>
+                                        <th>Amount</th>
+                                        <th title="Unconfirmed balance">Unc. balance</th>
+                                        <th>In orders</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td width="40%">{{ secondary_asset_balance }}</td>
+                                        <td>{{ secondary_asset_unc_balance }}</td>
+                                        <td>{{ secondary_asset_io_balance }}</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                                <div style="clear: both;"></div>
+                                <div class="balance-buttons text-center" v-if="secondary_asset_data">
+                                    <a :href="route('app.balances.deposit', {code: secondary_asset_data.id})" class="btn btn-success" title="deposit" target="_blank">Deposit <i class="glyphicon glyphicon-log-in"></i></a>
+                                    <a :href="route('app.balances.withdrawal', {code: secondary_asset_data.id})" class="btn" title="withdrawal" target="_blank">Withdrawal <i class="glyphicon glyphicon-log-out"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr />
+
+                    <h4 align="center">Deals history</h4>
+                    <div class="deals-table-container">
+                        <div class="deals-control">
+                            <div class="pull-right">
+                                Show:
+                                <label>
+                                    Mine
+                                    <input type="checkbox" v-model="deals_show_my_history" />
+                                </label>
+                                <label>
+                                    Buy
+                                    <input type="checkbox" v-model="deals_show_buy_history" />
+                                </label>
+                                <label>
+                                    Sell
+                                    <input type="checkbox" v-model="deals_show_sell_history" />
+                                </label>
+                            </div>
+                        </div>
+                        <table class="table table-striped trade-table table-hover trade-table deals-table stat-table">
+                            <tr>
+                                <th>Quantity</th>
+                                <th>Price</th>
+                                <th>Date</th>
+                            </tr>
+                            <tr v-if="!deals_list.data | !deals_list.data.length">
+                                <td colspan="4">Empty</td>
+                            </tr>
+                            <tr v-for="item in deals_list.data">
+                                <td>
+                                    <span v-if="item.type == 'sell'" class="dot_sell">&nbsp;</span>
+                                    <span  v-if="item.type == 'buy'" class="dot_buy">&nbsp;</span>
+                                    {{ item.quantity }}
+                                </td>
+                                <td><strong>{{ item.price }}</strong></td>
+                                <td>{{ item.created_at }}</td>
+                            </tr>
+                        </table>
+
+                        <pagination :data="Object.assign({}, deals_list)" @pagination-change-page="getDeals"></pagination>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+    import Vue from 'vue'
+    import axios from 'axios';
+
+    import zingchart from "zingchart";
+    import pagination from 'laravel-vue-pagination';
+
+    export default {
+        components: {
+            pagination
+        },
+        data() {
+            return {
+                timePeriods: {
+                    1: "1 min",
+                    5: "5 min",
+                    10: "10 min",
+                    30: "30 min",
+                    60: "1h",
+                    120: "2h",
+                    360: "6h",
+                    720: "12h",
+                    1440: "1d"
+                },
+                marketName: '...',
+                chart_period: null,
+                pair: null,
+                primary_asset: null,
+                secondary_asset: null,
+                primary_asset_balance: null,
+                secondary_asset_balance: null,
+                primary_asset_unc_balance: null,
+                secondary_asset_unc_balance: null,
+                primary_asset_io_balance: null,
+                secondary_asset_io_balance: null,
+                primary_asset_data: null,
+                secondary_asset_data: null,
+                primary_asset_volume: null,
+                secondary_asset_volume: null,
+                bid_sizePercent: 50,
+                ask_sizePercent: 50,
+                bid_size: 0,
+                ask_size: 0,
+                last_price: null,
+                ask_list: {data: []},
+                bid_list: {data: []},
+                my_sell_orders_list: [],
+                my_buy_orders_list: [],
+                deals_list: {data: []},
+                secondary_asset_quantity: 0,
+                daily_volume: null,
+                h24: null,
+                l24: null,
+                order_quantity: 0,
+                order_price: 0,
+                user_id: null,
+                deals_show_buy_history: true,
+                deals_show_sell_history: true,
+                deals_show_my_history: false,
+                currentPages: {
+                    deals: 1,
+                    buyOrders: 1,
+                    sellOrders: 1
+                }
+            }
+        },
+        computed: {
+
+        },
+        watch: {
+            chart_period: function(new_val) {
+                localStorage.setItem('chart_period', new_val);
+                this.updateChart();
+            },
+            deals_show_my_history: function() {
+                this.getDeals();
+            },
+            deals_show_buy_history: function() {
+                this.getDeals();
+            },
+            deals_show_sell_history: function() {
+                this.getDeals();
+            },
+        },
+        methods: {
+            updateChart: function() {
+                var that = this;
+
+                axios.get(route("market.ticker", {code: that.pair, period: parseInt(that.chart_period)}))
+                    .then((response) => {
+                        var myTheme = {
+                            palette:{
+                                line:[
+                                    ['#FBFCFE', '#00BAF2', '#00BAF2', '#00a7d9'], /* light blue */
+                                    ['#FBFCFE', '#E80C60', '#E80C60', '#d00a56'], /* light pink */
+                                    ['#FBFCFE', '#9B26AF', '#9B26AF', '#8b229d'], /* light purple */
+                                    ['#FBFCFE', '#E2D51A', '#E2D51A', '#E2D51A'], /* med yellow */
+                                    ['#FBFCFE', '#FB301E', '#FB301E', '#e12b1b'], /* med red */
+                                    ['#FBFCFE', '#00AE4D', '#00AE4D', '#00AE4D'], /* med green */
+                                ]
+                            }
+                        };
+
+                        zingchart.THEME = myTheme;
+
+                        let dateFormat = "%H:%i";
+                        if (that.chart_period >= 120) {
+                            dateFormat = "%d.%m.%Y<br>%H:%i:%s";
+                        }
+
+                        var myConfig = {
+                            "type": "mixed",
+                            "title": {
+                                "text": ""
+                            },
+                            "utc": true,
+                            "timezone": 0,
+                            "scale-x": {
+                                "min-value": response.data.time_start * 1000,
+                                "step": that.chart_period + "minute",
+                                "transform": {
+                                    "type":"date",
+                                    "all":dateFormat
+                                },
+                                "item":{
+                                    "font-size":9
+                                }
+                            },
+                            "scale-y": { //for Stock Chart
+                                "offset-start": "35%", //to adjust scale offsets.
+                                "format": "%v",
+                                "values": "0:" + (parseInt(response.data.max_price)+(parseInt(response.data.max_price)*0.5)) + ":" + (parseInt(response.data.max_price)+(parseInt(response.data.max_price)*0.5)),
+                                "label": {
+                                    "text": "Prices"
+                                }
+                            },
+                            "scale-y-2": { //for Volume Chart
+                                "placement": "default", //to move scale to default (left) side.
+                                "blended": true, //to bind the scale to "scale-y".
+                                "offset-end": "75%", //to adjust scale offsets.
+                                "values": "0:" + response.data.max_volume + ":" + response.data.max_volume,
+                                "format": "%v",
+                                "label": {
+                                    "text": "Volume"
+                                }
+                            },
+                            "series": [
+                                {
+                                    "type": "stock", //Stock Chart
+                                    "scales": "scale-x,scale-y", //to set applicable scales.
+                                    "values": response.data.ticker.ohlc
+                                },
+                                {
+                                    "type": "bar", //Volume Chart
+                                    "background-color": "#f4f4f4",
+                                    "scales": "scale-x,scale-y-2", //to set applicable scales.
+                                    "values": response.data.ticker.volume
+                                }
+                            ]
+                        };
+
+                        zingchart.render({
+                            id : 'chart',
+                            data : myConfig,
+                        });
+                    });
+            },
+            reset: function () {
+                this.secondary_asset_quantity = 0;
+                this.order_quantity = 0;
+
+                if (this.secondary_asset_data.min_trade_amount) {
+                    this.order_quantity = this.secondary_asset_data.min_trade_amount;
+                }
+
+                this.order_price = 0;
+                if (this.secondary_asset_data.min_price) {
+                    this.order_price = this.secondary_asset_data.min_price;
+                }
+            },
+            updateSummary: function() {
+                var that = this;
+
+                axios.get(route("market.summary", {code: that.pair}))
+                    .then((response) => {
+                        that.primary_asset_volume = parseFloat(response.data.primary_asset_volume);
+                        that.secondary_asset_volume = parseFloat(response.data.secondary_asset_volume);
+                        that.bid_size = parseFloat(response.data.bid_size);
+                        that.ask_size = parseFloat(response.data.ask_size);
+                        that.last_price = response.data.last_price;
+                        that.daily_volume = response.data.daily_volume;
+                        that.l24 = response.data.l24;
+                        that.h24 = response.data.h24;
+
+                        that.updateVolumeChart();
+                    });
+            },
+            updateBalances: function() {
+                var that = this;
+
+                axios.get(route("market.balance", {code: that.pair}))
+                    .then((response) => {
+                    that.primary_asset_balance = response.data.primary_asset;
+                    that.secondary_asset_balance = response.data.secondary_asset;
+                    that.primary_asset_unc_balance = response.data.primary_asset_unc_balance;
+                    that.secondary_asset_unc_balance = response.data.secondary_asset_unc_balance;
+                    that.primary_asset_io_balance = response.data.primary_asset_io_balance;
+                    that.secondary_asset_io_balance = response.data.secondary_asset_io_balance;
+                });
+            },
+            updateOrders: function() {
+                if (this.currentPages.buyOrders == 1) this.getBuyOrders();
+                if (this.currentPages.sellOrders == 1) this.getSellOrders();
+            },
+            getBuyOrders: function(page = 1) {
+                this.currentPages.buyOrders = page;
+
+                var that = this;
+
+                axios.get(route("market.orders", {code: that.pair, type: "buy", page: page}))
+                    .then((response) => {
+                        that.bid_list = response.data.list;
+                        that.my_buy_orders_list = response.data.my_list;
+                    });
+            },
+            getSellOrders: function(page = 1) {
+                this.currentPages.sellOrders = page;
+
+                var that = this;
+
+                axios.get(route("market.orders", {code: that.pair, type: "sell", page: page}))
+                    .then((response) => {
+                        that.ask_list = response.data.list;
+                        that.my_sell_orders_list = response.data.my_list;
+                    });
+            },
+            updateDeals: function() {
+                if (this.currentPages.deals == 1) this.getDeals();
+            },
+            getDeals: function(page = 1) {
+                this.currentPages.deals = page;
+
+                var that = this;
+
+                axios.get(route("market.deals", {code: this.pair, page: page, my: (this.deals_show_my_history) ? 1 : 0, buy: (this.deals_show_buy_history) ? 1 : 0, sell: (this.deals_show_sell_history) ? 1 : 0}))
+                    .then((response) => {
+                        that.deals_list = response.data;
+                    });
+            },
+            updateDashboard: function() {
+                this.updateDeals();
+                this.updateOrders();
+                this.updateBalances();
+            },
+            addOrder: function(type) {
+                var that = this;
+
+                if (!confirm ("Really want to " + type + " " + that.order_quantity + " with price " + that.order_price + "?")) {
+                    return false;
+                }
+
+                let quantity = that.order_quantity*that.secondary_asset_data.subunits;
+                let price = that.order_price*that.primary_asset_data.subunits;
+
+                axios.post(route("market.order.add"), {pair: this.pair, type: type, quantity: quantity, price: price})
+                    .then((response) => {
+                    that.reset();
+                    that.updateDashboard();
+                });
+            },
+            route: function(id, params) {
+                return route(id, params);
+            },
+            sell: function() {
+                this.addOrder('sell');
+            },
+            buy: function() {
+                this.addOrder('buy');
+            },
+            showErrors: function(errors) {
+                Object.keys(errors).forEach(function(element, key) {
+                    alert(errors[element]);
+                });
+            },
+            calculate: function() {
+                this.secondary_asset_quantity = Number.parseFloat(this.order_quantity * this.order_price).toFixed(8);
+            },
+            removeOrder: function(id) {
+                var that = this;
+                axios.post(route("market.order.remove"), {id: id})
+                    .then((response) => {
+                        that.updateDashboard();
+                    });
+            },
+            setPrice: function(list, price) {
+                this.order_price = price;
+                let orderQuantity = 0;
+
+                $(list).each(function() {
+                    if (this.price <= price) {
+                        orderQuantity += parseInt(this.quantity_remain);
+                    }
+                });
+                this.order_quantity = orderQuantity;
+            },
+            updateVolumeChart: function() {
+                var sum = this.bid_size + this.ask_size;
+                this.bid_sizePercent = (this.bid_size*100)/sum;
+                this.ask_sizePercent = (this.ask_size*100)/sum;
+
+                if (this.bid_sizePercent < 9) {
+                    this.bid_sizePercent = 9;
+                    this.ask_sizePercent = 91;
+                }
+
+                if (this.ask_sizePercent < 9) {
+                    this.ask_sizePercent = 9;
+                    this.bid_sizePercent = 91;
+                }
+            }
+        },
+        mounted() {
+            if (hydra && hydra.market) {
+                this.pair = hydra.market.pair.code;
+                this.primary_asset = hydra.market.primary_asset.code;
+                this.secondary_asset = hydra.market.secondary_asset.code;
+                this.primary_asset_balance = hydra.market.primary_asset_balance;
+                this.secondary_asset_balance = hydra.market.secondary_asset_balance;
+                this.primary_asset_unc_balance = hydra.market.primary_asset_unc_balance;
+                this.secondary_asset_unc_balance = hydra.market.secondary_asset_unc_balance;
+                this.primary_asset_io_balance = hydra.market.primary_asset_io_balance;
+                this.secondary_asset_io_balance = hydra.market.secondary_asset_io_balance;
+                this.secondary_asset_data = hydra.market.secondary_asset;
+                this.primary_asset_data = hydra.market.primary_asset;
+            }
+
+            let chart_period;
+            if (chart_period = localStorage.getItem('chart_period')) {
+                this.chart_period = chart_period;
+            } else {
+                this.chart_period = 5;
+            }
+
+            this.marketName = this.pair;
+
+            this.reset();
+            this.updateSummary();
+            this.updateDashboard();
+            this.updateChart();
+            this.updateBalances();
+
+            setInterval(function () {
+                this.updateDashboard();
+            }.bind(this), 10000);
+
+            setInterval(function () {
+                this.updateBalances();
+                this.updateSummary();
+            }.bind(this), 20000);
+        }
+    }
+</script>
+
+<style>
+    .dot_sell {
+        width: 5px;
+        height: 5px;
+        background-color: red;
+    }
+    .dot_buy {
+        color: green;
+        width: 5px;
+        height: 5px;
+        background-color: green;
+    }
+
+    .deals-control label {
+        padding-left: 14px;
+    }
+
+    .my-order {
+        color: #ccc;
+    }
+
+    .left-block {
+        width: 401px;
+        padding: 8px;
+        position: fixed;
+        top: 1px;
+        background-color: #f9f9f9;
+        border-left: 1px solid #ccc;
+        height: 100vh;
+        z-index: 10;
+    }
+
+    .deals-table-container {
+        width: 100%;
+    }
+
+    .periods a {
+        float: left;
+        display: block;
+        padding: 4px;
+    }
+
+    .periods .active {
+        font-weight: bold;
+    }
+
+    #chart-license-text {
+        display: none;
+    }
+
+    #chart {
+
+    }
+
+    .volume-line {
+        width: 100%;
+        height: 20px;
+    }
+
+    .volume-line .bid-volume {
+        color: white;
+        padding: 3px;
+        font-size: 12px;
+        text-align: right;
+        background-color: #8cd6ba;
+        width: 50%;
+        float: left;
+    }
+
+    .volume-line .ask-volume {
+        color: white;
+        padding: 3px;
+        font-size: 12px;
+        text-align: left;
+        background-color: #ecb5ba;
+        width: 50%;
+        float: right;
+    }
+
+    .trade-table td, .trade-table th {
+        font-family: 'Roboto Mono';
+    }
+
+    .dataTable td {
+        padding: 1px !important;
+        font-size: 12px;
+    }
+
+    .trade-app tr:hover td {
+        background-color: #e4e4e4;
+    }
+
+    .nav-tabs {
+        margin-left: -9px;
+        margin-top: -9px;
+    }
+
+    .pagination > li > a, .pagination > li > span {
+        padding: 4px 9px;
+    }
+
+    .table-no-bordered tr:hover td {
+        background-color: #fff;
+    }
+</style>
