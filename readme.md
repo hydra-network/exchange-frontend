@@ -1,6 +1,6 @@
 # Hydra DEX
 
-For now here is an ordinal centralized exchange (EX), ready to 80%. But the primarily goal of me is to create
+For now here is an ordinal centralized exchange (EX), ready to 80%. But the primarily goal is to create
 the first decentralized exchange (DEX). The DEX is 15% ready.
 
 The basic market advantage of Hydra is fully open source and decentralization. No license
