@@ -26,7 +26,7 @@ For now there is backend and frontend, a bit later I'll separate this repository
 
  * ~~Registration and authorization, reset password (with 2FA and confirmation of email)~~;
  * ~~Markets page~~;
- * ~~Market page~~;
+ * ~~Market page with a chart and control panels of user~~;
  * ~~Adding of orders to order book, cancel of orders~~;
  * ~~Orders matcher (assets switcher by changing of balance of both sides of deal)~~;
  * ~~Orders history~~;
@@ -52,10 +52,13 @@ The roadmap for short term period is:
  * EX documentation; - 25.07.2019
  * Fees system; - 30.07.2019
  * Referral program; - 05.08.2019
+ * Simple interface for non-professional traders (possible to buy and sell of any assets without
+ chart and all other complex interfaces for professional traders); - 15.08.2019
+ * Trading View chart; - 30.08.2019
  
 ## DEX functionality
 
-long term plans:
+Long term plans (not sure I'll be strong enough):
 
  * Hydra Dex Protocol. This paper will show my thoughts about architect of DEX (consensus, roles, workflow of order and deal);
  * Own blockchain with security token on board;
