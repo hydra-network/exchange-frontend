@@ -41,7 +41,7 @@ For now there is backend and frontend, a bit later I'll separate this repository
 
 The roadmap for short term period is:
  
- * Featured tests of API; - 28.06.2019
+ * Feature tests of API; - 28.06.2019
  * Withdrawal and deposit systems; - 30.06.2019
  * Design for page of list of markets; - 30.06.2019
  * Demo instance for demonstration of basic advantages of EX; - 05.07.2019
@@ -57,7 +57,7 @@ The roadmap for short term period is:
 
 long term plans:
 
- * Hydra Dex Protocol. This paper will show my thoughts about architect of DEX (consensus, );
+ * Hydra Dex Protocol. This paper will show my thoughts about architect of DEX (consensus, roles, workflow of order and deal);
  * Own blockchain with security token on board;
  * Node server for security tokens owners;
  
