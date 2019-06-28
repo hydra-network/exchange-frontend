@@ -11805,7 +11805,7 @@ h3,
 h4,
 .h4 {
   font-weight: 300;
-  margin: 30px 0 15px;
+  margin: 20px 0 15px;
 }
 
 h1,
@@ -11888,7 +11888,7 @@ h3 .small {
 
 h1 .subtitle {
   display: block;
-  margin: 0 0 30px;
+  margin: 0 0 20px;
 }
 
 .text-muted {
@@ -17727,7 +17727,7 @@ body {
 }
 
 .navbar-header h1 {
-  font-size: 22px;
+  font-size: 31px;
   color: black;
 }
 

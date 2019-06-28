@@ -15,7 +15,7 @@ class Kernel extends ConsoleKernel
     protected $commands = [
         Commands\DepositChecker::class,
         Commands\WithdrawalChecker::class,
-        Commands\DealManager::class,
+        Commands\OrderMatcher::class,
         Commands\TickerSaver::class,
         Commands\SandboxManager::class
     ];

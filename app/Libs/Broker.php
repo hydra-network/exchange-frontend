@@ -24,7 +24,7 @@ class Broker
         $client = $this->client;
 
         DB::transaction(function() use ($order, $pair, $type, $quantity, $price, $client) {
-            $cost = $quantity*$price;
+            $cost = $quantity*($price/$pair->primary->subunits);
 
             $order->fill([
                 'pair_id' => $pair->id,

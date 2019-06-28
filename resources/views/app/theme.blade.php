@@ -51,7 +51,6 @@
     </footer>
     <!-- Footer -->
     @yield('js')
-    <script src="{{ mix('js/theme.js') }}?1"></script>
     @stack('scripts')
     @yield('page-scripts')
 </body>

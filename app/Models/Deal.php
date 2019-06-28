@@ -10,8 +10,8 @@ class Deal extends Model
     protected $hidden = ['buyer_user_id', 'seller_user_id'];
     public $timestamps = true;
 
-    const TYPE_SELL = 'sell';
-    const TYPE_BUY = 'buy';
+    const TYPE_SELLER_TAKER = 1;
+    const TYPE_BUYER_TAKER = 2;
 
     public function pair()
     {

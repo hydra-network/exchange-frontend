@@ -1,4 +1,4 @@
-<div class="sidebar" data-color="#000">
+<div class="sidebar" id="sidebar" data-color="#000">
     <!--div class="logo">
 
     </div-->

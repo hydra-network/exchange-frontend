@@ -1,21 +1,20 @@
 <nav class="navbar navbar-default">
     <div class="container-fluid">
-        <div class="navbar-minimize">
-            <!--button id="minimizeSidebar" class="btn btn-default btn-fill btn-round btn-icon">
-                <i class="fa fa-ellipsis-v visible-on-sidebar-regular"></i>
-                <i class="fa fa-navicon visible-on-sidebar-mini"></i>
-            </button-->
-        </div>
+        <!--div class="navbar-minimize">
+            <button id="minimizeSidebar" class="btn btn-default btn-fill btn-round btn-icon">
+                <i class="glyphicon glyphicon-align-justify"></i>
+            </button>
+        </div-->
 
         <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse">
+            <!--button type="button" class="navbar-toggle" data-toggle="collapse">
                 <span class="sr-only">Toggle navigation</span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
-            </button>
+            </button-->
 
-            <h1>@yield('title')</h1>
+            <h1 style="padding-left: 14px;">@yield('title')</h1>
         </div>
 
         <div class="collapse navbar-collapse">

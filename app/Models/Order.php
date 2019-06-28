@@ -17,44 +17,18 @@ class Order extends Model
 
     const OWNER_TYPE_MAKER = 'maker';
     const OWNER_TYPE_TAKER = 'taker';
-    
-    const STATUS_NEW = 'new';
-    const STATUS_MATCHING = 'matching';
-    const STATUS_ACTIVE = 'active';
-    const STATUS_ARCHIVE = 'archive';
-    const STATUS_CANCEL = 'cancel';
-    const STATUS_PARTIAL = 'broken';
-    const STATUS_ESCROW_WAIT_SELLER = 'escrow_ws';
-    const STATUS_ESCROW_WAIT_DEPO = 'escrow_wd';
-    const STATUS_ESCROW_WAIT_CONF = 'escrow_wc';
-    const STATUS_ESCROW_DONE = 'escrow_done';
+
+    const STATUS_ACTIVE = 1;
+    const STATUS_PARTIAL = 2;
+    const STATUS_EMPTY = 3;
+    const STATUS_NEW = 4;
+    const STATUS_CANCEL = 5;
 
     public function isNew()
     {
         return ($this->status == self::STATUS_NEW);
     }
 
-    public function activateAndSave()
-    {
-        $this->status = self::STATUS_ACTIVE;
-        
-        return $this->save();
-    }
-    
-    public function archiveAndSave()
-    {
-        $this->status = self::STATUS_ARCHIVE;
-
-        return $this->save();
-    }
-    
-    public function matchingAndSave()
-    {
-        $this->status = self::STATUS_MATCHING;
-
-        return $this->save();
-    }
-    
     public function breakAndSave()
     {
         $this->owner_type = self::OWNER_TYPE_TAKER;

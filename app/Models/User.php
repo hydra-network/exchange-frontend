@@ -75,7 +75,16 @@ class User extends Authenticatable
 
         return $balanceModel->save();
     }
-    
+
+    public function transaction(Asset $asset, Deal $deal, $balance)
+    {
+        $balanceModel = new Balance;
+
+        $balanceModel->fill(['type' => Balance::TYPE_INCOME, 'asset_id' => $asset->id, 'user_id' => $this->id, 'order_id' => null, 'deal_id' => $deal->id, 'deposit_id' => null, 'withdrawal_id' => null, 'balance' => $balance]);
+
+        return $balanceModel->save();
+    }
+
     public function income(Asset $asset, Deal $deal, $quantity)
     {
         $balance = $this->getBalance($asset);

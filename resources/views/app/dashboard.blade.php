@@ -5,55 +5,42 @@
 @section('content')
     @include('flash::message')
 
-    <div class="nav-tabs-custom">
-        <ul class="nav nav-tabs ui-sortable-handle">
-            <li class="active"><a href="#btc-markets" class="btn btn-success">Bitcoin</a></li>
-            <li><a href="#bmk-markets" class="btn btn-default" onclick="alert('Coming soon'); return false;">Ether</a></li>
-            <li><a href="#bmk-markets" class="btn btn-default" style="opacity: 0.8;" onclick="alert('Coming soon'); return false;">USDT</a></li>
-            <li><a href="#bmk-markets" class="btn btn-default" style="opacity: 0.8;" onclick="alert('Coming soon'); return false;">🐵 BitMonk</a></li>
-        </ul>
-    </div>
+        @foreach ($primaryCurrencies as $primary)
+            <h4>{{$primary->name}} markets</h4>
 
-    <div class="tab-content" id="marketsTabContent">
-        <div class="tab-pane active" id="btc-markets" role="tabpanel" aria-labelledby="btc-markets">
-            <table class="table">
+            <table class="table table-hover">
                 <tr>
-                    <th>Asset</th>
-                    <th>Market</th>
-                    <th>Last price</th>
-                    <th>Bid</th>
-                    <th>Ask</th>
-                    <th>24 Volume</th>
+                    <th width="30%">Asset</th>
+                    <th width="10%">Last price</th>
+                    <th width="10%">Bid</th>
+                    <th width="10%">Ask</th>
+                    <th width="10%">24 Volume</th>
                     <th>Actions</th>
                 </tr>
                 @foreach ($pairs as $pair)
                     @php
-                        $primary_asset = $pair->primary;
-                        $secondary_asset = $pair->secondary;
+                        $primaryAsset = $pair->primary;
+                        $secondaryAsset = $pair->secondary;
                     @endphp
-                    <tr>
-                        <td>
-                            <a href="{{ route('app.market.pair', ['code' => $pair->code]) }}"><strong>{{ $secondary_asset->name }}</strong></a>
-                        </td>
-                        <td>
-                            <a href="{{ route('app.market.pair', ['code' => $pair->code]) }}"> {{ $primary_asset->code }}-{{ $secondary_asset->code }}</a>
-                        </td>
-                        <td>{{ $pair->getLastPrice() }}</td>
-                        <td>{{ $pair->getBidPrice() }}</td>
-                        <td>{{ $pair->getAskPrice() }}</td>
-                        <td>{{ $pair->getDailyVolume() }}</td>
-                        <td>
-                            <a href="{{ route('app.market.pair', ['code' => $pair->code]) }}" class="btn btn-default">Trade</a>
 
-                            <a href="{{ route('app.balances.deposit', ['code' => $secondary_asset->code]) }}" class="btn btn-success" title="@lang('dictionary.deposit')"><i class="glyphicon glyphicon-log-in"></i></a>
-                            <a href="{{ route('app.balances.withdrawal', ['code' => $secondary_asset->code]) }}" class="btn btn-danger" title="@lang('dictionary.withdrawal')"><i class="glyphicon glyphicon-log-out"></i></a>
-                        </td>
-                    </tr>
+                    @if ($primaryAsset->id == $primary->id)
+                        <tr>
+                            <td>
+                                <a href="{{ route('app.market.pair', ['code' => $pair->code]) }}"><strong>{{ $secondaryAsset->name }}</strong></a>
+                            </td>
+                            <td>{{ $pair->getLastPrice() }}</td>
+                            <td>{{ $pair->getBidPrice() }}</td>
+                            <td>{{ $pair->getAskPrice() }}</td>
+                            <td>{{ $pair->getDailyVolume() }}</td>
+                            <td>
+                                <a href="{{ route('app.market.pair', ['code' => $pair->code]) }}" class="btn btn-default">Trade</a>
+
+                                <a href="{{ route('app.balances.deposit', ['code' => $secondaryAsset->code]) }}" class="btn btn-success" title="@lang('dictionary.deposit')"><i class="glyphicon glyphicon-log-in"></i></a>
+                                <a href="{{ route('app.balances.withdrawal', ['code' => $secondaryAsset->code]) }}" class="btn btn-danger" title="@lang('dictionary.withdrawal')"><i class="glyphicon glyphicon-log-out"></i></a>
+                            </td>
+                        </tr>
+                    @endif
                 @endforeach
             </table>
-        </div>
-        <div class="tab-pane" id="bmk-markets" role="tabpanel" aria-labelledby="btc-markets">
-            <p>Mainnet coming soon.</p>
-        </div>
-    </div>
+        @endforeach
 @endsection

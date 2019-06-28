@@ -22,7 +22,7 @@ class Pair extends Model
     public function getLastPrice()
     {
         if ($lastDeal = Deal::where('pair_id', $this->id)->orderBy('created_at', 'DESC')->first()) {
-            return $lastDeal->price;
+            return $this->primary->format($lastDeal->price);
         }
         
         return null;
@@ -35,7 +35,7 @@ class Pair extends Model
                 ->where('type', Order::TYPE_BUY)
                 ->orderBy('price', 'DESC')
                 ->first()) {
-            return $order->price;
+            return $this->primary->format($order->price);
         }
         
         return null;
@@ -48,7 +48,7 @@ class Pair extends Model
                 ->where('type', Order::TYPE_SELL)
                 ->orderBy('price', 'ASC')
                 ->first()) {
-            return $order->price;
+            return $this->primary->format($order->price);
         }
         
         return null;
@@ -76,8 +76,8 @@ class Pair extends Model
                 ->sum('quantity_remain');
                 
         return [
-            'bid' => $bidSize,
-            'ask' => $askSize,
+            'bid' => $this->secondary->format($bidSize),
+            'ask' => $this->secondary->format($askSize),
         ];
     }
 

@@ -19,6 +19,7 @@ class Formatter
 
             $formattedObject['price'] = $asset->primary->format($formattedObject['price']);
             $formattedObject['cost'] = $asset->primary->format($formattedObject['cost']);
+
             if (isset($formattedObject['cost_remain'])) {
                 $formattedObject['cost_remain'] = $asset->primary->format($formattedObject['cost_remain']);
             }

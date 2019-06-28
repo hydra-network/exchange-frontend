@@ -11,7 +11,7 @@ class App
      */
     public function map(Registrar $router)
     {
-        $router->group(['prefix' => 'app', 'middleware' => ['auth', '2fa'], 'as' => 'app.'], function () use ($router) {
+        $router->group(['prefix' => 'app', 'middleware' => ['auth'], 'as' => 'app.'], function () use ($router) {
             # Dashboard
             $router->get('/', 'DashboardController@index')->name('dashboard');
 

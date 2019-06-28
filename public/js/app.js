@@ -2580,6 +2580,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         }
     },
     mounted: function mounted() {
+        var hydra = window.hydra;
+
         if (hydra && hydra.market) {
             this.pair = hydra.market.pair.code;
             this.primary_asset = hydra.market.primary_asset.code;
@@ -47360,6 +47362,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue_awesome_notifications__ = __webpack_require__("./node_modules/vue-awesome-notifications/dist/index.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue_awesome_notifications___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_vue_awesome_notifications__);
 __webpack_require__("./resources/assets/js/bootstrap.js");
+__webpack_require__("./resources/assets/js/jquery_scripts.js");
 __webpack_require__("./node_modules/sweetalert2/dist/sweetalert2.js");
 
 
@@ -47385,6 +47388,8 @@ var app = new Vue({
 /***/ (function(module, exports, __webpack_require__) {
 
 window._ = __webpack_require__("./node_modules/lodash/lodash.js");
+
+__webpack_require__("./resources/assets/js/ziggy.js");
 
 /**
  * We'll load jQuery and the Bootstrap jQuery plugin which provides support
@@ -47683,6 +47688,21 @@ axios.interceptors.response.use(function (response) {
 
     return Promise.reject(error);
 });
+
+/***/ }),
+
+/***/ "./resources/assets/js/jquery_scripts.js":
+/***/ (function(module, exports) {
+
+
+
+/***/ }),
+
+/***/ "./resources/assets/js/ziggy.js":
+/***/ (function(module, __webpack_exports__) {
+
+"use strict";
+
 
 /***/ }),
 

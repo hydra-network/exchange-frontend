@@ -633,6 +633,8 @@
             }
         },
         mounted() {
+            let hydra = window.hydra;
+
             if (hydra && hydra.market) {
                 this.pair = hydra.market.pair.code;
                 this.primary_asset = hydra.market.primary_asset.code;

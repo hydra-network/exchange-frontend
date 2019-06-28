@@ -10,7 +10,7 @@ class Api
     {
         $router->group([
             'prefix' => 'api',
-            'middleware' => ['auth', '2fa'],
+            'middleware' => ['auth'],
         ], function ($router) {
             $router->group([
                 'prefix' => 'v1',

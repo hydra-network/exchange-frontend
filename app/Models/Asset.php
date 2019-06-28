@@ -10,11 +10,6 @@ class Asset extends Model
     const STATUS_ACTIVE = 1;
     const STATUS_INACTIVE = 2;
 
-    public function getBalance()
-    {
-        return "0.00000000";
-    }
-
     public function getNode()
     {
         return $this->hasOne('App\Models\NodeServer');
@@ -62,6 +57,8 @@ class Asset extends Model
 
     public function format($quantity)
     {
+        $quantity = (int) $quantity;
+
         if ($this->subunits) {
             $quantity = $quantity/$this->subunits;
         }

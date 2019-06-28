@@ -1,4 +1,5 @@
 require('./bootstrap');
+require('./jquery_scripts');
 require('sweetalert2/dist/sweetalert2');
 import AwesomeNotifications from 'vue-awesome-notifications';
 
