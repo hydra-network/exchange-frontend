@@ -31,10 +31,10 @@
                 <div style="clear: both;"></div>
 
                 <div class="row">
-                    <div class="col-md-12" v-if="bid_sizePercent > 0 && ask_sizePercent > 0">
+                    <div class="col-md-12" v-if="bid_size_percent > 0 && ask_size_percent > 0">
                         <div class="volume-line">
-                            <div class="bid-volume" v-bind:style="'width: ' + bid_sizePercent + '%'">{{ bid_size }} {{ secondary_asset }}</div>
-                            <div class="ask-volume" v-bind:style="'width: ' + ask_sizePercent + '%'">{{ ask_size }} {{ secondary_asset }}</div>
+                            <div class="bid-volume" v-bind:style="'width: ' + bid_size_percent + '%'">{{ bid_size }} {{ secondary_asset }}</div>
+                            <div class="ask-volume" v-bind:style="'width: ' + ask_size_percent + '%'">{{ ask_size }} {{ secondary_asset }}</div>
                         </div>
                         <br />
                     </div>
@@ -314,9 +314,11 @@
 <script>
     import Vue from 'vue'
     import axios from 'axios';
-
+    import AWN from "awesome-notifications"
     import zingchart from "zingchart";
     import pagination from 'laravel-vue-pagination';
+
+    let notifier = new AWN({})
 
     export default {
         components: {
@@ -350,8 +352,8 @@
                 secondary_asset_data: null,
                 primary_asset_volume: null,
                 secondary_asset_volume: null,
-                bid_sizePercent: 50,
-                ask_sizePercent: 50,
+                bid_size_percent: 50,
+                ask_size_percent: 50,
                 bid_size: 0,
                 ask_size: 0,
                 last_price: null,
@@ -505,6 +507,14 @@
                         that.l24 = response.data.l24;
                         that.h24 = response.data.h24;
 
+                        if (response.data.alerts) {
+                            $(response.data.alerts).each((i, el) => {
+                                if (el.class == 'success') {
+                                    notifier.success(el.message);
+                                }
+                            });
+                        }
+
                         that.updateVolumeChart();
                     });
             },
@@ -611,24 +621,24 @@
 
                 $(list).each(function() {
                     if (this.price <= price) {
-                        orderQuantity += parseInt(this.quantity_remain);
+                        orderQuantity += parseFloat(this.quantity_remain);
                     }
                 });
                 this.order_quantity = orderQuantity;
             },
             updateVolumeChart: function() {
                 var sum = this.bid_size + this.ask_size;
-                this.bid_sizePercent = (this.bid_size*100)/sum;
-                this.ask_sizePercent = (this.ask_size*100)/sum;
+                this.bid_size_percent = (this.bid_size*100)/sum;
+                this.ask_size_percent = (this.ask_size*100)/sum;
 
-                if (this.bid_sizePercent < 9) {
-                    this.bid_sizePercent = 9;
-                    this.ask_sizePercent = 91;
+                if (this.bid_size_percent < 9) {
+                    this.bid_size_percent = 9;
+                    this.ask_size_percent = 91;
                 }
 
-                if (this.ask_sizePercent < 9) {
-                    this.ask_sizePercent = 9;
-                    this.bid_sizePercent = 91;
+                if (this.ask_size_percent < 9) {
+                    this.ask_size_percent = 9;
+                    this.bid_size_percent = 91;
                 }
             }
         },
@@ -710,6 +720,8 @@
 
     .deals-table-container {
         width: 100%;
+        height: 500px;
+        overflow-y: scroll;
     }
 
     .periods a {

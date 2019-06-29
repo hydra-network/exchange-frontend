@@ -3,8 +3,6 @@
 @section('title', 'Trade markets')
 
 @section('content')
-    @include('flash::message')
-
         @foreach ($primaryCurrencies as $primary)
             <h4>{{$primary->name}} markets</h4>
 

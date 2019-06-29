@@ -36,70 +36,74 @@ class Matching implements ShouldQueue
      */
     public function handle()
     {
-        $pairModel = PairModel::whereId($this->pair_id)->firstOrFail();
+        try {
+            $pairModel = PairModel::whereId($this->pair_id)->firstOrFail();
 
-        $buyOrderModel = OrderModel::where('pair_id', $this->pair_id)->whereType(OrderModel::TYPE_BUY)->orderBy('price', 'DESC')->first();
-        $sellOrderModel = OrderModel::where('pair_id', $this->pair_id)->whereType(OrderModel::TYPE_SELL)->orderBy('price', 'ASC')->first();
+            $buyOrderModel = OrderModel::where('pair_id', $this->pair_id)->whereType(OrderModel::TYPE_BUY)->orderBy('price', 'DESC')->first();
+            $sellOrderModel = OrderModel::where('pair_id', $this->pair_id)->whereType(OrderModel::TYPE_SELL)->orderBy('price', 'ASC')->first();
 
-        if ($buyOrderModel && $sellOrderModel) {
-            $pair = new Pair(
-                new Asset("BTC"), //primary asset
-                new Asset("ETH") //secondary asset
-            );
+            if ($buyOrderModel && $sellOrderModel) {
+                $pair = new Pair(
+                    new Asset("BTC"), //primary asset
+                    new Asset("ETH") //secondary asset
+                );
 
-            $primaryAsset = $pairModel->primary()->first();
-            $secondaryAsset = $pairModel->secondary()->first();
+                $primaryAsset = $pairModel->primary()->first();
+                $secondaryAsset = $pairModel->secondary()->first();
 
-            $buyerBalance = new BuyerBalance($buyOrderModel->user->getBalance($primaryAsset), $buyOrderModel->user->getBalance($secondaryAsset));
-            $sellerBalance = new SellerBalance($sellOrderModel->user->getBalance($primaryAsset), $sellOrderModel->user->getBalance($secondaryAsset));
+                $buyerBalance = new BuyerBalance($buyOrderModel->user->getBalance($primaryAsset), $buyOrderModel->user->getBalance($secondaryAsset));
+                $sellerBalance = new SellerBalance($sellOrderModel->user->getBalance($primaryAsset), $sellOrderModel->user->getBalance($secondaryAsset));
 
-            $buyOrder = new BuyOrder($pair, 100, 10, $buyerBalance, 1);
-            $sellOrder = new SellOrder($pair, 10, 9, $sellerBalance, 2);
+                $buyOrder = new BuyOrder($pair, 100, 10, $buyerBalance, 1);
+                $sellOrder = new SellOrder($pair, 10, 9, $sellerBalance, 2);
 
-            $matcher = new Matcher($buyOrder, $sellOrder);
+                $matcher = new Matcher($buyOrder, $sellOrder);
 
-            if ($deal = $matcher->matching()) {
-                \DB::transaction(function() use ($pairModel, $buyOrderModel, $sellOrderModel, $buyerBalance, $sellerBalance, $buyOrder, $sellOrder, $deal) {
-                    $primaryAsset = $pairModel->primary()->first();
-                    $secondaryAsset = $pairModel->secondary()->first();
+                if ($deal = $matcher->matching()) {
+                    \DB::transaction(function() use ($pairModel, $buyOrderModel, $sellOrderModel, $buyerBalance, $sellerBalance, $buyOrder, $sellOrder, $deal) {
+                        $primaryAsset = $pairModel->primary()->first();
+                        $secondaryAsset = $pairModel->secondary()->first();
 
-                    $dealModel = new DealModel;
-                    $dealModel->fill([
-                        'pair_id' => $pairModel->id,
-                        'buyer_user_id' => $buyOrderModel->user->id,
-                        'seller_user_id' => $sellOrderModel->user->id,
-                        'ask_id' => $buyOrderModel->id,
-                        'bid_id' => $sellOrderModel->id,
-                        'quantity' => $deal->getQuantity(),
-                        'price' => $deal->getPrice(),
-                        'cost' => $deal->getQuantity() * $deal->getPrice(),
-                        'type' => $deal->getType()
-                    ]);
+                        $dealModel = new DealModel;
+                        $dealModel->fill([
+                            'pair_id' => $pairModel->id,
+                            'buyer_user_id' => $buyOrderModel->user->id,
+                            'seller_user_id' => $sellOrderModel->user->id,
+                            'ask_id' => $buyOrderModel->id,
+                            'bid_id' => $sellOrderModel->id,
+                            'quantity' => $deal->getQuantity(),
+                            'price' => $deal->getPrice(),
+                            'cost' => $deal->getQuantity() * $deal->getPrice(),
+                            'type' => $deal->getType()
+                        ]);
 
-                    if ($dealModel->save()) {
-                        $buyOrderModel->user->transaction($primaryAsset, $dealModel, $buyerBalance->getPrimary());
-                        $buyOrderModel->user->transaction($secondaryAsset, $dealModel, $buyerBalance->getSecondary());
+                        if ($dealModel->save()) {
+                            $buyOrderModel->user->transaction($primaryAsset, $dealModel, $buyerBalance->getPrimary());
+                            $buyOrderModel->user->transaction($secondaryAsset, $dealModel, $buyerBalance->getSecondary());
 
-                        $sellOrderModel->user->transaction($primaryAsset, $dealModel, $sellerBalance->getPrimary());
-                        $sellOrderModel->user->transaction($secondaryAsset, $dealModel, $sellerBalance->getSecondary());
+                            $sellOrderModel->user->transaction($primaryAsset, $dealModel, $sellerBalance->getPrimary());
+                            $sellOrderModel->user->transaction($secondaryAsset, $dealModel, $sellerBalance->getSecondary());
 
-                        $buyOrderModel->quantity_remain = $buyOrder->getQuantityRemain();
-                        $buyOrderModel->status = $buyOrder->getStatus();
-                        $buyOrderModel->cost_remain = $buyOrder->getCostRemain();
-                        $buyOrderModel->save();
+                            $buyOrderModel->quantity_remain = $buyOrder->getQuantityRemain();
+                            $buyOrderModel->status = $buyOrder->getStatus();
+                            $buyOrderModel->cost_remain = $buyOrder->getCostRemain();
+                            $buyOrderModel->save();
 
-                        $sellOrderModel->quantity_remain = $sellOrder->getQuantityRemain();
-                        $sellOrderModel->status = $sellOrder->getStatus();
-                        $sellOrderModel->cost_remain = $sellOrder->getCostRemain();
-                        $sellOrderModel->save();
+                            $sellOrderModel->quantity_remain = $sellOrder->getQuantityRemain();
+                            $sellOrderModel->status = $sellOrder->getStatus();
+                            $sellOrderModel->cost_remain = $sellOrder->getCostRemain();
+                            $sellOrderModel->save();
 
-                        echo implode("\n", Logger::list());
-                        echo "____________________\n";
-                    }
-                });
+                            echo implode("\n", Logger::list());
+                            echo "____________________\n";
+                        }
+                    });
+                }
             }
-        }
 
-        return true;
+            return true;
+        } catch (\Throwable $e) {
+            return false;
+        }
     }
 }

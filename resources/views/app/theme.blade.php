@@ -42,6 +42,12 @@
         </div>
     </div>
     <div id="app">
+        @if(flash()->message)
+            <div class="{{ flash()->class }}">
+                {{ flash()->message }}
+            </div>
+        @endif
+
         @yield('body')
     </div>
     <footer class="page-footer font-small blue pt-4">

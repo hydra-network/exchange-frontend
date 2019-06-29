@@ -13,7 +13,7 @@ creation of independent fork (all forks are welcome).
 
 ![Zgorinich](https://user-images.githubusercontent.com/8104605/60265924-9bccb280-98ef-11e9-84b6-f5fe39cc2ff7.jpg)
 
-_Zmey Gorynych (on picture) is the fork of Hydra character in Russian folklore._ 
+_Zmey Gorynych (on picture) is a fork of Hydra character in Russian folklore._ 
 
 This repository includes:
 

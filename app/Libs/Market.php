@@ -66,6 +66,19 @@ class Market
             ->orderBy('id', 'DESC');
     }
 
+    public function myNewDeals($limit = 10)
+    {
+        $userId = $this->user->id;
+
+        return Deal::where('pair_id', $this->pair->id)->where('pair_id', $this->pair->id)
+            ->where(function ($query) use ($userId) {
+                $query->where('buyer_user_id', '=', auth()->user()->id)->orWhere('seller_user_id', '=', auth()->user()->id);
+            })
+            ->where('notify_at', null)
+            ->limit($limit)
+            ->orderBy('id', 'ASC');
+    }
+
     public function dealsHistory(bool $my = false, $buy = true, $sell = true)
     {
         $deals = Deal::where('pair_id', $this->pair->id)->where('pair_id', $this->pair->id);

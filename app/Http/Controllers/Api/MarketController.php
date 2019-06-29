@@ -111,15 +111,33 @@ class MarketController extends Controller
         $l24 = Deal::where('pair_id', $pair->id)->whereBetween('created_at', [date('Y-m-d H:i:s', time()-86400), date('Y-m-d H:i:s', time())])
             ->where('pair_id', $pair->id)
             ->min('price');
-        
+
+        $alerts = [];
+
+        $market = new Market($pair, auth()->user());
+
+        $freshDeals = $market->myNewDeals()->get();
+
+        foreach ($freshDeals as $deal) {
+            $alerts[] = [
+                'class' => 'success',
+                'message' => "{$deal->pair->code}: new deal, price is {$deal->price}",
+                'link' => route('app.history')
+            ];
+
+            $deal->notify_at = date('Y-m-d H:i:s');
+            $deal->save();
+        }
+
         return response()->json([
             'primary_asset_volume' => $pair->primary->format($volumes['bid']),
             'secondary_asset_volume' => $pair->secondary->format($volumes['ask']),
             'daily_volume' =>  $pair->primary->format($volume24),
-            'bid_size' => $pair->secondary->format($sizes['bid']),
-            'ask_size' => $pair->primary->format($sizes['ask']),
+            'bid_size' => $sizes['bid'],
+            'ask_size' => $sizes['ask'],
             'h24' => ($h24) ? $h24 : 0,
             'l24' => ($l24) ? $l24 : 0,
+            'alerts' => $alerts,
             'last_price' => ($lastPrice) ? $pair->primary->format($lastPrice->price) : 0,
         ]);
     }

@@ -96,10 +96,6 @@
             .btn {
                 white-space: normal !important;
             }
-            
-            .logo-cont {
-                text-align: center;
-            }
         }
         
     </style>

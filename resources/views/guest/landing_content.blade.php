@@ -10,7 +10,7 @@
       <div class="header-item">
         <div class="inn">
             <div class="row">
-                <div class="col-sm-3 logo-cont"><a href="/"><img src="/img/logored.png" style="padding-top: 20px;" title="Hydra DEX" /></a></div>
+                <div class="col-sm-3 logo-cont"><a href="/" style="color: white; font-size: 26px;">Hydra DEX</a></div>
                 <div class="col-sm-6"></div>
             </div>
             <div class="row register-form">
