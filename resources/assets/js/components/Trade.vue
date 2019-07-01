@@ -292,7 +292,7 @@
                             <tr v-if="!deals_list.data | !deals_list.data.length">
                                 <td colspan="4">Empty</td>
                             </tr>
-                            <tr v-for="item in deals_list.data">
+                            <tr v-for="item in deals_list.data" :title="'ID is ' + item.id">
                                 <td>
                                     <span v-if="item.type == 'sell'" class="dot_sell">&nbsp;</span>
                                     <span  v-if="item.type == 'buy'" class="dot_buy">&nbsp;</span>
@@ -716,6 +716,7 @@
         border-left: 1px solid #ccc;
         height: 100vh;
         z-index: 10;
+        font-size: 12px;
     }
 
     .deals-table-container {
@@ -739,7 +740,7 @@
     }
 
     #chart {
-
+        min-height: 485px;
     }
 
     .volume-line {

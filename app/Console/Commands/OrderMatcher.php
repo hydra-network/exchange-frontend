@@ -42,7 +42,7 @@ class OrderMatcher extends Command
           $pairs = Pair::all();
 
           foreach ($pairs as $pair) {
-              echo "{$pair->id} \n";
+              echo "Pair {$pair->id} \n";
               Matching::dispatchNow($pair->id);
           }
     }

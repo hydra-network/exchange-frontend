@@ -39,10 +39,11 @@ class Matching implements ShouldQueue
         try {
             $pairModel = PairModel::whereId($this->pair_id)->firstOrFail();
 
-            $buyOrderModel = OrderModel::where('pair_id', $this->pair_id)->whereType(OrderModel::TYPE_BUY)->orderBy('price', 'DESC')->first();
-            $sellOrderModel = OrderModel::where('pair_id', $this->pair_id)->whereType(OrderModel::TYPE_SELL)->orderBy('price', 'ASC')->first();
+            $buyOrderModel = OrderModel::where('pair_id', $this->pair_id)->whereIn('status', [OrderModel::STATUS_NEW, OrderModel::STATUS_ACTIVE, OrderModel::STATUS_PARTIAL])->whereType(OrderModel::TYPE_BUY)->orderBy('price', 'DESC')->first();
+            $sellOrderModel = OrderModel::where('pair_id', $this->pair_id)->whereIn('status', [OrderModel::STATUS_NEW, OrderModel::STATUS_ACTIVE, OrderModel::STATUS_PARTIAL])->whereType(OrderModel::TYPE_SELL)->orderBy('price', 'ASC')->first();
 
             if ($buyOrderModel && $sellOrderModel) {
+                echo "Counter orders found {$buyOrderModel->price} - {$sellOrderModel->price}\n";
                 $pair = new Pair(
                     new Asset("BTC"), //primary asset
                     new Asset("ETH") //secondary asset
@@ -54,12 +55,13 @@ class Matching implements ShouldQueue
                 $buyerBalance = new BuyerBalance($buyOrderModel->user->getBalance($primaryAsset), $buyOrderModel->user->getBalance($secondaryAsset));
                 $sellerBalance = new SellerBalance($sellOrderModel->user->getBalance($primaryAsset), $sellOrderModel->user->getBalance($secondaryAsset));
 
-                $buyOrder = new BuyOrder($pair, 100, 10, $buyerBalance, 1);
-                $sellOrder = new SellOrder($pair, 10, 9, $sellerBalance, 2);
+                $buyOrder = new BuyOrder($pair, $buyOrderModel->quantity_remain, $buyOrderModel->price, $buyerBalance, 1);
+                $sellOrder = new SellOrder($pair, $sellOrderModel->quantity_remain, $sellOrderModel->price, $sellerBalance, 2);
 
                 $matcher = new Matcher($buyOrder, $sellOrder);
 
                 if ($deal = $matcher->matching()) {
+                    echo "Deal - successfull\n";
                     \DB::transaction(function() use ($pairModel, $buyOrderModel, $sellOrderModel, $buyerBalance, $sellerBalance, $buyOrder, $sellOrder, $deal) {
                         $primaryAsset = $pairModel->primary()->first();
                         $secondaryAsset = $pairModel->secondary()->first();
@@ -98,11 +100,14 @@ class Matching implements ShouldQueue
                             echo "____________________\n";
                         }
                     });
+                } else {
+                    echo "No deal \n";
                 }
             }
 
             return true;
         } catch (\Throwable $e) {
+            echo "[Error]: " . $e->getMessage() . "\n";
             return false;
         }
     }

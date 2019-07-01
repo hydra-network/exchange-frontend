@@ -17,4 +17,9 @@ class Deal extends Model
     {
         return $this->hasOne('App\Models\Pair', 'id', 'pair_id');
     }
+
+    public function getPrice()
+    {
+        return $this->pair->primary->format($this->price);
+    }
 }

@@ -68,7 +68,7 @@ class Order extends Model
         $secondary = $this->pair->secondary;
 
         if ($this->type == self::TYPE_BUY) {
-            $user->freezeAssets($primary, $this, ($this->quantity*$this->price));
+            $user->freezeAssets($primary, $this, ($this->quantity*($this->price/$primary->subunits)));
         } else {
             $user->freezeAssets($secondary, $this, $this->quantity);
         }

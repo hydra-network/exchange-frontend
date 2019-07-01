@@ -32,7 +32,9 @@ class MarketController extends Controller
 
         $market = new Market($pair, auth()->user());
 
-        $dealsList = $market->dealsHistory($my, $buy, $sell)->paginate(50);
+        $dealsList = $market->dealsHistory($my, $buy, $sell)->paginate(50)->toArray();
+
+        $dealsList['data'] = Formatter::formatObjects($pair, $dealsList['data']);
 
         return $dealsList;
     }
@@ -121,7 +123,7 @@ class MarketController extends Controller
         foreach ($freshDeals as $deal) {
             $alerts[] = [
                 'class' => 'success',
-                'message' => "{$deal->pair->code}: new deal, price is {$deal->price}",
+                'message' => "{$deal->pair->code}: new deal, price is {$deal->getPrice()}",
                 'link' => route('app.history')
             ];
 
