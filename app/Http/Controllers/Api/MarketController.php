@@ -142,90 +142,15 @@ class MarketController extends Controller
         ]);
     }
     
-    public function getTicks($code, $period = 1, $limit = 40, Request $request) //$period - in minuts
+    public function getTicks($code, $period = 1, $limit = 40) //$period - in minuts
     {
         session(['chart_period' => $period]);
         
         $pair = PairModel::where('code', $code)->firstOrFail();
 
-        $from = time()-($period*$limit);
-        
-        $ticks = [
-            'ohlc' => [],
-            'volume' => [],
-            'times' => []
-        ];
-        
-        $lastI = $from;
-        for ($i = 1; $i <= $limit; $i++) {
-            $time = $from + ($i*$period*60);
+        $market = new Market($pair, auth()->user());
 
-            if (!$open = Deal::where('pair_id', $pair->id)->whereBetween('created_at', [date('Y-m-d H:i:s', $lastI), date('Y-m-d H:i:s', $time)])->OrderBy('id', 'ASC')->first()) {
-                $open = Deal::where('pair_id', $pair->id)->where('created_at', '<', date('Y-m-d H:i:s', $time))->OrderBy('id', 'DESC')->first();
-            }
-
-            if (!$hight = Deal::where('pair_id', $pair->id)->whereBetween('created_at', [date('Y-m-d H:i:s', $lastI), date('Y-m-d H:i:s', $time)])->OrderBy('price', 'DESC')->first()) {
-                $hight = Deal::where('pair_id', $pair->id)->where('created_at', '<', date('Y-m-d H:i:s', $time))->OrderBy('id', 'DESC')->first();
-            }
-
-            if (!$low = Deal::where('pair_id', $pair->id)->whereBetween('created_at', [date('Y-m-d H:i:s', $lastI), date('Y-m-d H:i:s', $time)])->OrderBy('price', 'ASC')->first()) {
-                $low = Deal::where('pair_id', $pair->id)->where('created_at', '<', date('Y-m-d H:i:s', $time))->OrderBy('id', 'DESC')->first();
-            }
-
-            if (!$close = Deal::where('pair_id', $pair->id)->whereBetween('created_at', [date('Y-m-d H:i:s', $lastI), date('Y-m-d H:i:s', $time)])->OrderBy('id', 'DESC')->first()) {
-                $close = Deal::where('pair_id', $pair->id)->where('created_at', '<', date('Y-m-d H:i:s', $time))->OrderBy('id', 'DESC')->first();
-            }
-
-            $volume = Deal::where('pair_id', $pair->id)->whereBetween('created_at', [date('Y-m-d H:i:s', $lastI), date('Y-m-d H:i:s', $time)])->sum('quantity');
-
-            $minPrice = null;
-            $maxPrice = 0;
-
-            $minVolume = null;
-            $maxVolume = 0;
-
-            if ($volume > $maxVolume) {
-                $maxVolume = $volume;
-            }
-
-            if (!$minVolume | $volume < $minVolume) {
-                $minVolume = $volume;
-            }
-
-            if ($open && $hight && $low && $close) {
-                $o = $open->price;
-                $h = $hight->price;
-                $l = $low->price;
-                $c = $close->price;
-
-                if ($hight->price > $maxPrice) {
-                    $maxPrice = $hight->price;
-                }
-
-                if (!$minPrice | $low->price < $minPrice) {
-                    $minPrice = $low->price;
-                }
-
-                $ticks['ohlc'][] = [$pair->primary->format($o), $pair->primary->format($h), $pair->primary->format($l), $pair->primary->format($c)];
-                $ticks['volume'][] = $volume;
-                $ticks['times'][] = date('H:i', $time);
-            }
-
-            $lastI = $time;
-        }
-
-        $ticks['times'] = implode(':', $ticks['times']);
-        
-        return response()->json([
-            'result' => 'success',
-            'ticker' => $ticks,
-            'max_price' => $pair->primary->format($maxPrice),
-            'min_price' => $pair->primary->format($minPrice),
-            'max_volume' => $maxVolume,
-            'min_volume' => $minVolume,
-            'time_start' => $from,
-            'time_stop' => $lastI
-        ]);
+        return $market->getTicks($period, $limit);
     }
 
     protected function getOrders($code, $type)
