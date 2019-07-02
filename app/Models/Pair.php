@@ -76,8 +76,8 @@ class Pair extends Model
                 ->sum('quantity_remain');
                 
         return [
-            'bid' => $this->secondary->format($bidSize),
-            'ask' => $this->secondary->format($askSize),
+            'bid' => $bidSize,
+            'ask' => $askSize,
         ];
     }
 
