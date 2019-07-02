@@ -6,7 +6,7 @@
                     <table title="24 hours"  width="100%">
                         <tbody class="table-no-bordered">
                             <tr>
-                                <td>Hight: {{h24}}</td>
+                                <td>High: {{h24}}</td>
                                 <td>Low: {{l24}}</td>
                                 <td><strong>Last: {{ last_price }}</strong></td>
                                 <td>Volume: {{ daily_volume }}</td>
@@ -160,7 +160,7 @@
                                     <td colspan="6">Empty</td>
                                 </tr>
                                 <tr v-for="item in my_buy_orders_list">
-                                    <td><strong>{{ item.price }}</strong></td>
+                                    <td :title="item.id"><strong>{{ item.price }}</strong></td>
                                     <td>{{ item.quantity }}</td>
                                     <td>{{ item.quantity_remain }}</td>
                                     <td>{{ item.status }}</td>

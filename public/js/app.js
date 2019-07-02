@@ -35997,7 +35997,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }
   }, [_c('tbody', {
     staticClass: "table-no-bordered"
-  }, [_c('tr', [_c('td', [_vm._v("Hight: " + _vm._s(_vm.h24))]), _vm._v(" "), _c('td', [_vm._v("Low: " + _vm._s(_vm.l24))]), _vm._v(" "), _c('td', [_c('strong', [_vm._v("Last: " + _vm._s(_vm.last_price))])]), _vm._v(" "), _c('td', [_vm._v("Volume: " + _vm._s(_vm.daily_volume))]), _vm._v(" "), _c('td', [_c('div', {
+  }, [_c('tr', [_c('td', [_vm._v("High: " + _vm._s(_vm.h24))]), _vm._v(" "), _c('td', [_vm._v("Low: " + _vm._s(_vm.l24))]), _vm._v(" "), _c('td', [_c('strong', [_vm._v("Last: " + _vm._s(_vm.last_price))])]), _vm._v(" "), _c('td', [_vm._v("Volume: " + _vm._s(_vm.daily_volume))]), _vm._v(" "), _c('td', [_c('div', {
     staticClass: "pull-right periods"
   }, [_c('small', _vm._l((_vm.timePeriods), function(item, key, index) {
     return _c('a', {
@@ -36239,7 +36239,11 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "colspan": "6"
     }
   }, [_vm._v("Empty")])]) : _vm._e(), _vm._v(" "), _vm._l((_vm.my_buy_orders_list), function(item) {
-    return _c('tr', [_c('td', [_c('strong', [_vm._v(_vm._s(item.price))])]), _vm._v(" "), _c('td', [_vm._v(_vm._s(item.quantity))]), _vm._v(" "), _c('td', [_vm._v(_vm._s(item.quantity_remain))]), _vm._v(" "), _c('td', [_vm._v(_vm._s(item.status))]), _vm._v(" "), _c('td', [_vm._v(_vm._s(item.created_at))]), _vm._v(" "), _c('td', [_c('a', {
+    return _c('tr', [_c('td', {
+      attrs: {
+        "title": item.id
+      }
+    }, [_c('strong', [_vm._v(_vm._s(item.price))])]), _vm._v(" "), _c('td', [_vm._v(_vm._s(item.quantity))]), _vm._v(" "), _c('td', [_vm._v(_vm._s(item.quantity_remain))]), _vm._v(" "), _c('td', [_vm._v(_vm._s(item.status))]), _vm._v(" "), _c('td', [_vm._v(_vm._s(item.created_at))]), _vm._v(" "), _c('td', [_c('a', {
       staticStyle: {
         "color": "red"
       },

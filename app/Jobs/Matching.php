@@ -44,27 +44,48 @@ class Matching implements ShouldQueue
 
             if ($buyOrderModel && $sellOrderModel) {
                 echo "Counter orders found {$buyOrderModel->price} - {$sellOrderModel->price}\n";
+
                 $pair = new Pair(
                     new Asset("BTC"), //primary asset
                     new Asset("ETH") //secondary asset
                 );
 
-                $primaryAsset = $pairModel->primary()->first();
-                $secondaryAsset = $pairModel->secondary()->first();
+                $primaryAsset = $pairModel->primary;
+                $secondaryAsset = $pairModel->secondary;
 
-                $buyerBalance = new BuyerBalance($buyOrderModel->user->getBalance($primaryAsset), $buyOrderModel->user->getBalance($secondaryAsset));
-                $sellerBalance = new SellerBalance($sellOrderModel->user->getBalance($primaryAsset), $sellOrderModel->user->getBalance($secondaryAsset));
+                $buyerBalance = new BuyerBalance(
+                        ($buyOrderModel->user->getBalance($primaryAsset) + $buyOrderModel->price),
+                        $buyOrderModel->user->getBalance($secondaryAsset)
+                );
 
-                $buyOrder = new BuyOrder($pair, $buyOrderModel->quantity_remain, $buyOrderModel->price, $buyerBalance, 1);
-                $sellOrder = new SellOrder($pair, $sellOrderModel->quantity_remain, $sellOrderModel->price, $sellerBalance, 2);
+                $sellerBalance = new SellerBalance(
+                    $sellOrderModel->user->getBalance($primaryAsset),
+                    ($sellOrderModel->user->getBalance($secondaryAsset) + $sellOrderModel->quantity_remain)
+                );
+
+                $buyOrder = new BuyOrder(
+                    $pair,
+                    $buyOrderModel->quantity_remain,
+                    $buyOrderModel->price/$primaryAsset->subunits,
+                    $buyerBalance,
+                    $buyOrderModel->id
+                );
+
+                $sellOrder = new SellOrder(
+                    $pair,
+                    $sellOrderModel->quantity_remain,
+                    $sellOrderModel->price/$primaryAsset->subunits,
+                    $sellerBalance,
+                    $buyOrderModel->id
+                );
 
                 $matcher = new Matcher($buyOrder, $sellOrder);
 
                 if ($deal = $matcher->matching()) {
                     echo "Deal - successfull\n";
                     \DB::transaction(function() use ($pairModel, $buyOrderModel, $sellOrderModel, $buyerBalance, $sellerBalance, $buyOrder, $sellOrder, $deal) {
-                        $primaryAsset = $pairModel->primary()->first();
-                        $secondaryAsset = $pairModel->secondary()->first();
+                        $primaryAsset = $pairModel->primary;
+                        $secondaryAsset = $pairModel->secondary;
 
                         $dealModel = new DealModel;
                         $dealModel->fill([
@@ -74,7 +95,7 @@ class Matching implements ShouldQueue
                             'ask_id' => $buyOrderModel->id,
                             'bid_id' => $sellOrderModel->id,
                             'quantity' => $deal->getQuantity(),
-                            'price' => $deal->getPrice(),
+                            'price' => ($deal->getPrice() * $primaryAsset->subunits),
                             'cost' => $deal->getQuantity() * $deal->getPrice(),
                             'type' => $deal->getType()
                         ]);
@@ -95,15 +116,15 @@ class Matching implements ShouldQueue
                             $sellOrderModel->status = $sellOrder->getStatus();
                             $sellOrderModel->cost_remain = $sellOrder->getCostRemain();
                             $sellOrderModel->save();
-
-                            echo implode("\n", Logger::list());
-                            echo "____________________\n";
                         }
                     });
                 } else {
                     echo "No deal \n";
                 }
             }
+
+            echo implode("\n", Logger::list());
+            echo "\n____________________\n";
 
             return true;
         } catch (\Throwable $e) {
