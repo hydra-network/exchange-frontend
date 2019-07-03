@@ -57,10 +57,6 @@ class ProfileController extends Controller
                 auth()->user()->name = $request->get('name');
             }
 
-            if ($request->has('email')) {
-                auth()->user()->email = $request->get('email');
-            }
-
             if ($request->get('password')) {
                 auth()->user()->password = bcrypt($request->get('password'));
             }

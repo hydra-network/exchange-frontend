@@ -29,7 +29,7 @@
                             <td>{{ $pair->getLastPrice() }}</td>
                             <td>{{ $pair->getBidPrice() }}</td>
                             <td>{{ $pair->getAskPrice() }}</td>
-                            <td>{{ $pair->getDailyVolume() }}</td>
+                            <td>{{ $pair->getDailyVolume() }} {{$primaryAsset->code}}</td>
                             <td>
                                 <a href="{{ route('app.market.pair', ['code' => $pair->code]) }}" class="btn btn-default">Trade</a>
 

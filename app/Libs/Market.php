@@ -92,11 +92,11 @@ class Market
 
         if (!$sell | !$buy) {
             if ($sell) {
-                $deals->where('type', Deal::TYPE_SELL);
+                $deals->where('type', Deal::TYPE_BUYER_TAKER);
             }
 
             if ($buy) {
-                $deals->where('type', Deal::TYPE_BUY);
+                $deals->where('type', Deal::TYPE_SELLER_TAKER);
             }
         }
 

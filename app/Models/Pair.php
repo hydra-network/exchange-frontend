@@ -56,9 +56,11 @@ class Pair extends Model
     
     public function getDailyVolume()
     {
-        return Deal::whereBetween('created_at', [date('Y-m-d H:i:s', time()-86400), date('Y-m-d H:i:s', time())])
+        $cost = Deal::whereBetween('created_at', [date('Y-m-d H:i:s', time()-86400), date('Y-m-d H:i:s', time())])
             ->where('pair_id', $this->id)
             ->sum('cost');
+
+        return $this->primary->format($cost);
     }
 
     public function getSizes()
