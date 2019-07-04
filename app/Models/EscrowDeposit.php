@@ -18,12 +18,12 @@ class EscrowDeposit extends Model
         return $this->hasOne('App\Models\Pair', 'id', 'pair_id');
     }
 
-    public function secondary
+    public function secondary()
     {
         return $this->pair->secondary;
     }
 
-    public function primary
+    public function primary()
     {
         return $this->pair->primary;
     }

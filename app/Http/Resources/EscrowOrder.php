@@ -46,12 +46,12 @@ class EscrowOrder extends Resource
         return $this->resource->pair;
     }
 
-    public function secondary
+    public function secondary()
     {
         return $this->resource->pair->secondary;
     }
 
-    public function primary
+    public function primary()
     {
         return $this->resource->pair->primary;
     }

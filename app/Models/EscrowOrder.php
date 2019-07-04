@@ -24,12 +24,12 @@ class EscrowOrder extends Model
         return $this->hasOne('App\Models\Order', 'id', 'order_id');
     }
 
-    public function secondary
+    public function secondary()
     {
         return $this->pair->secondary;
     }
 
-    public function primary
+    public function primary()
     {
         return $this->pair->primary;
     }

@@ -17,12 +17,12 @@
                 </a>
             </li>
 
-            <li>
+            <!--li>
                 <a href="{{ route('app.escrow.index') }}">
                     <i class="glyphicon glyphicon-retweet"></i>
                     <p>Escrow</p>
                 </a>
-            </li>
+            </li-->
 
             <li>
                 <a href="{{ route('app.balances') }}">
