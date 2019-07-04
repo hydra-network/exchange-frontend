@@ -1,4 +1,4 @@
-# Hydra DEX
+# Hydra EX
 
 For now here is an ordinal centralized exchange (EX), ready to 80%. But the primarily goal is to create
 the first decentralized exchange (DEX). The DEX is 15% ready.
@@ -20,6 +20,34 @@ This repository includes:
  * PHP API (Laravel)
  * Trader Interface for operate with API (VueJS)
  
+## Install
+
+Via Laradock:
+
+``
+docker-compose up -d nginx php-fpm mysql
+docker exec -it laradock_workspace_1 bash
+cp .env.example .env
+``
+
+Config editing
+``
+nano .env #for config editor
+``
+
+Installing of dependencies and migrations
+
+``
+composer install
+php artisan migrate
+``
+
+Launching of queue consumer:
+
+``
+php artisan queue:work --queue=high
+``
+
 For now there is backend and frontend, a bit later I'll separate this repository for 2 independent components.
  
 ## EX functionality:
@@ -31,13 +59,15 @@ For now there is backend and frontend, a bit later I'll separate this repository
  * ~~Orders matcher (assets switcher by changing of balance of both sides of deal)~~;
  * ~~Orders history~~;
  * ~~Market restrictions by owners of assets (daily volume limit, price limit, etc)~~;
- * Simple admin panel for administrator (yii2);
+ * Simple admin panel for administrator;
  * Deposit and withdrawal of cryptocurrencies through a crypto-driver (all other assets are compatible);
  * Simple admin panel for assets owners;
  * Fees system;
  * Referral system.
  
-### Roadmap 
+# Hydra DEX
+ 
+## Roadmap 
 
 The roadmap for short term period is:
  
@@ -46,7 +76,7 @@ The roadmap for short term period is:
  * Design for page of list of markets; - 30.06.2019
  * Demo instance for demonstration of basic advantages of EX; - 05.07.2019
  * Landing page and video presentation of EX; - 05.07.2019
- * Docker container, instructions for simple installation; - 07.07.2019
+ * ~~Docker container~~, instructions for simple installation; - 07.07.2019
  * Creation of temporary ERC20 token (HYST) for period while the DEX is in development; - 10.07.2019 
  * Launching of token trading on EX (HYST/BTC); - 15.07.2019
  * EX documentation; - 25.07.2019
