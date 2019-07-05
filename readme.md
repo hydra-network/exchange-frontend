@@ -24,26 +24,26 @@ This repository includes:
 
 Via Laradock (change mysql version to 5.7 in .env):
 
-``
+```
 docker-compose up -d nginx php-fpm mysql
 docker exec -it laradock_workspace_1 bash
 chmod -R 0777 storage/logs
 chmod -R 0777 storage/framework
 php artisan key:generate
 cp .env.example .env
-``
+```
 
 Config editing
-``
+```
 nano .env #for config editor
-``
+```
 
 Installing of dependencies and migrations
 
-``
+```
 composer install
 php artisan migrate
-``
+```
 
 Launching of queue consumer:
 
