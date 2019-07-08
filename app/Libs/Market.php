@@ -13,7 +13,7 @@ class Market
     private $pair;
     private $user;
 
-    public function __construct(Pair $pair, User $user)
+    public function __construct(Pair $pair, ?User $user)
     {
         $this->user = $user;
         $this->pair = $pair;
@@ -40,6 +40,10 @@ class Market
 
     public function myActiveOrders($type = null)
     {
+        if (!$this->user) {
+            return Order::where('id', 0);
+        }
+
         $list = Order::where('pair_id', $this->pair->id)
             ->whereIn('status', [Order::STATUS_NEW, Order::STATUS_ACTIVE, Order::STATUS_PARTIAL])
             ->where('user_id', $this->user->id);
@@ -57,6 +61,10 @@ class Market
 
     public function myDeals()
     {
+        if (!$this->user) {
+            return Deal::where('id', 0);
+        }
+
         $userId = $this->user->id;
 
         return Deal::where('pair_id', $this->pair->id)->where('pair_id', $this->pair->id)
@@ -68,6 +76,10 @@ class Market
 
     public function myNewDeals($limit = 10)
     {
+        if (!$this->user) {
+            return Deal::where('id', 0);
+        }
+
         $userId = $this->user->id;
 
         return Deal::where('pair_id', $this->pair->id)->where('pair_id', $this->pair->id)
@@ -84,9 +96,13 @@ class Market
         $deals = Deal::where('pair_id', $this->pair->id)->where('pair_id', $this->pair->id);
 
         if ($my) {
+            if (!$this->user) {
+                return Deal::where('id', 0);
+            }
+
             $userId = $this->user->id;
             $deals->where(function ($query) use ($userId) {
-                $query->where('buyer_user_id', '=', auth()->user()->id)->orWhere('seller_user_id', '=', auth()->user()->id);
+                $query->where('buyer_user_id', '=', $this->user->id)->orWhere('seller_user_id', '=', $this->user->id);
             });
         }
 

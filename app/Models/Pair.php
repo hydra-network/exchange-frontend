@@ -85,6 +85,10 @@ class Pair extends Model
 
     public function userInOrdersPrimaryBalance()
     {
+        if (!auth()->user()) {
+            return 0;
+        }
+
         if ($sum = Order::where('pair_id', $this->id)
             ->whereIn('status', [Order::STATUS_NEW, Order::STATUS_ACTIVE, Order::STATUS_PARTIAL])
             ->where('user_id', auth()->user()->id)
@@ -98,6 +102,10 @@ class Pair extends Model
 
     public function userInOrdersSecondaryBalance()
     {
+        if (!auth()->user()) {
+            return 0;
+        }
+
         if ($sum = Order::where('pair_id', $this->id)
             ->whereIn('status', [Order::STATUS_NEW, Order::STATUS_ACTIVE, Order::STATUS_PARTIAL])
             ->where('user_id', auth()->user()->id)

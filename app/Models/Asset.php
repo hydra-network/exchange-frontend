@@ -24,6 +24,10 @@ class Asset extends Model
     
     public function userBalance()
     {
+        if (!auth()->user()) {
+            return 0;
+        }
+
         $balance = 0;
 
         if ($balanceHistory = Balance::where('user_id', auth()->user()->id)->where('asset_id', $this->id)->orderBy('id', 'DESC')->first()) {
@@ -35,6 +39,10 @@ class Asset extends Model
 
     public function userUnconfirmedBalance()
     {
+        if (!auth()->user()) {
+            return 0;
+        }
+
         $balance = 0;
 
         if ($depoSum = Deposit::where('user_id', auth()->user()->id)->where('asset_id', $this->id)->where('confirmations', '<', $this->min_confirmations)->sum('quantity')) {

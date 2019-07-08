@@ -18,7 +18,6 @@
             background-color: #040c17;
         }
         header {
-              background: url('/img/bg.jpg') no-repeat center center scroll;
               -webkit-background-size: cover;
               -moz-background-size: cover;
               -o-background-size: cover;
@@ -68,8 +67,7 @@
         
         .register-form label {
             display: block;
-            padding: 12px;
-            text-align: center;
+            text-align: left;
         }
         
         .register-form label input {
@@ -96,6 +94,15 @@
             .btn {
                 white-space: normal !important;
             }
+
+            .invalid-feedback {
+                color: red;
+            }
+        }
+
+        .form-group {
+            padding-top: 10px;
+            padding-left: 2px;
         }
         
     </style>

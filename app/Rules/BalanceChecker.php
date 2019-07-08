@@ -38,7 +38,11 @@ class BalanceChecker implements Rule
         $primaryAsset = $this->pair->primary;
         $secondaryAsset = $this->pair->secondary;
         $user = auth()->user();
-        
+
+        if (!$user) {
+            return false;
+        }
+
         if ($this->type == Order::TYPE_BUY) {
             $balance = $user->getBalance($primaryAsset);
 

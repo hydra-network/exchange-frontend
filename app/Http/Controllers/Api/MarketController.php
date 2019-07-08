@@ -164,9 +164,11 @@ class MarketController extends Controller
         $list = $market->activeOrders($type)->paginate(10)->toArray();
         $myList = $market->myactiveOrders($type)->limit(100)->get()->toArray();
 
-        if ($myPrices = OrderModel::where('user_id', auth()->user()->id)->whereIn('status', [OrderModel::STATUS_NEW, OrderModel::STATUS_ACTIVE, OrderModel::STATUS_PARTIAL])->groupBy('price')->pluck('price')->toArray()) {
-            foreach ($list['data'] as $order) {
-                $order->my = (in_array($order->price, $myPrices)) ? true : false;
+        if (auth()->user()) {
+            if ($myPrices = OrderModel::where('user_id', auth()->user()->id)->whereIn('status', [OrderModel::STATUS_NEW, OrderModel::STATUS_ACTIVE, OrderModel::STATUS_PARTIAL])->groupBy('price')->pluck('price')->toArray()) {
+                foreach ($list['data'] as $order) {
+                    $order->my = (in_array($order->price, $myPrices)) ? true : false;
+                }
             }
         }
 

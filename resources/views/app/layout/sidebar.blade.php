@@ -37,20 +37,22 @@
                     <p>History</p>
                 </a>
             </li>
-            
-            <li style="margin-top: 100px;">
-                <a href="{{ route('app.profile') }}">
-                    <i class="fa fa-user"></i>
-                    <p>Profile</p>
-                </a>
-            </li>
 
-            <li>
-                <a href="{{ route('logout') }}" onclick="if (!confirm('Logout?')) return false;">
-                    <i class="fa fa-sign-out"></i>
-                    <p>@lang('dictionary.logout')</p>
-                </a>
-            </li>
+            @if (auth()->user())
+                <li style="margin-top: 100px;">
+                    <a href="{{ route('app.profile') }}">
+                        <i class="fa fa-user"></i>
+                        <p>Profile</p>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="{{ route('logout') }}" onclick="if (!confirm('Logout?')) return false;">
+                        <i class="fa fa-sign-out"></i>
+                        <p>@lang('dictionary.logout')</p>
+                    </a>
+                </li>
+            @endif
         </ul>
     </div>
 </div>

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4a94f9a6075a761ca05393ae93bf4c70",
+    "content-hash": "725f47c187076680fe6084f0b0cc1874",
     "packages": [
         {
             "name": "composer/xdebug-handler",
@@ -2786,6 +2786,52 @@
                 "uuid"
             ],
             "time": "2018-08-12T15:49:01+00:00"
+        },
+        {
+            "name": "rdehnhardt/html",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/rdehnhardt/html.git",
+                "reference": "ea0278c5089c88a75d655ef450526dc2c948f13a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/rdehnhardt/html/zipball/ea0278c5089c88a75d655ef450526dc2c948f13a",
+                "reference": "ea0278c5089c88a75d655ef450526dc2c948f13a",
+                "shasum": ""
+            },
+            "require": {
+                "laravelcollective/html": "~5.6"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Rdehnhardt\\Html\\HtmlServiceProvider"
+                    ],
+                    "aliases": {
+                        "Form": "Collective\\Html\\FormFacade",
+                        "Html": "Collective\\Html\\HtmlFacade"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Rdehnhardt\\Html\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Renato Dehnhardt",
+                    "email": "renatotkd@gmail.com"
+                }
+            ],
+            "time": "2018-06-11T12:26:51+00:00"
         },
         {
             "name": "spatie/laravel-flash",
@@ -6122,7 +6168,7 @@
     "minimum-stability": "dev",
     "stability-flags": {
         "hydraex/exchange": 20,
-        "laravelcollective/html": 20,
+        "rdehnhardt/html": 20,
         "spatie/laravel-flash": 20
     },
     "prefer-stable": false,

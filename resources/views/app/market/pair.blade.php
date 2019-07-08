@@ -10,6 +10,7 @@
     <script>
         window.hydra = {
             market: {
+                auth: {{(auth()->user()) ? 'true' : 'false'}},
                 pair: {!! json_encode($pair->toArray()) !!},
                 primary_asset: {!! json_encode($primary_asset->toArray()) !!},
                 secondary_asset: {!! json_encode($secondary_asset->toArray()) !!},
@@ -21,7 +22,7 @@
                 secondary_asset_io_balance: '{{ $pair->userInOrdersSecondaryBalance() }}',
                 primary_asset_volume: '{{ $pair->getSizes()['bid'] }}',
                 secondary_asset_volume: '{{ $pair->getSizes()['ask'] }}',
-                user_id: {{auth()->user()->id}},
+                user_id: {{(auth()->user()) ? auth()->user()->id : 0 }},
                 chart_period: {{ ($period = session('chart_period')) ? (int) $period : 60 }}
             },
         }

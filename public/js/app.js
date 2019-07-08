@@ -47726,9 +47726,8 @@ axios.interceptors.response.use(function (response) {
 /***/ }),
 
 /***/ "./resources/assets/js/ziggy.js":
-/***/ (function(module, __webpack_exports__) {
+/***/ (function(module, exports) {
 
-"use strict";
 
 
 /***/ }),

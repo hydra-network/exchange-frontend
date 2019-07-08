@@ -1,4 +1,4 @@
-@extends('auth.layout')
+@extends('app.layout')
 
 @section('title', trans('dictionary.register'))
 
@@ -6,12 +6,7 @@
     <script src='https://www.google.com/recaptcha/api.js'></script>
     {!! Form::open(['method' => 'post', 'route' => ['register']]) !!}
     <div class="card {{ !$errors->isEmpty() ?: 'card-hidden' }}">
-        <!--div class="alert alert-danger" style="font-size: 12px; text-align: center;">
-          <p>Please note that it's only MVP. We didn't pass security audit and you can lost your deposit due hacker attach or errors in algorythms.</p>
-        </div-->
-    
-        <div class="header text-center">{{ trans('dictionary.register') }}</div>
-
+        <br />
         <div class="content-no-padding padding-h-20">
             {!! Form::openGroup('name', trans('dictionary.name')) !!}
             {!! Form::text('name') !!}
@@ -29,8 +24,8 @@
             {!! Form::password('password_confirmation') !!}
             {!! Form::closeGroup() !!}
             
-            <div style="margin-left: 8px;">
-                <div class="g-recaptcha" data-sitekey="6LcV5WcUAAAAALXLGRJ4mkYLNB14nmEEM9fMCw8j"></div>
+            <div style="text-align: center;">
+                <div class="g-recaptcha" data-sitekey="{{env('GOOGLE_RECAPTCHA_KEY')}}"></div>
             </div>
             <br />
         </div>

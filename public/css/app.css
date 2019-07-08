@@ -17735,3 +17735,7 @@ body {
   display: none;
 }
 
+.invalid-feedback {
+  color: red;
+}
+
