@@ -9,7 +9,7 @@ class BalancesController extends Controller
 {
     public function index()
     {
-        $currencies = Asset::orderBy('name')->where('status', 1)->get();
+        $currencies = Asset::orderBy('name')->where('status', Asset::STATUS_ACTIVE)->get();
 
         return view('app.balances', [
             'currencies' => $currencies,
@@ -18,7 +18,7 @@ class BalancesController extends Controller
 
     public function deposit($code)
     {
-        $currency = Asset::where('code', $code)->where('status', 1)->first();
+        $currency = Asset::where('code', $code)->where('status', Asset::STATUS_ACTIVE)->firstOrFail();
 
         return view('app.balances.deposit', [
             'currency' => $currency,
@@ -27,7 +27,7 @@ class BalancesController extends Controller
 
     public function withdrawal($code)
     {
-        $currency = Asset::where('code', $code)->where('status', 1)->first();
+        $currency = Asset::where('code', $code)->where('status', Asset::STATUS_ACTIVE)->firstOrFail();
 
         return view('app.balances.withdrawal', [
             'currency' => $currency,
