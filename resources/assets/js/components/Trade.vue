@@ -255,8 +255,8 @@
                                 </table>
                                 <div style="clear: both;"></div>
                                 <div class="balance-buttons text-center" v-if="secondary_asset_data">
-                                    <a :href="route('app.balances.deposit', {code: secondary_asset_data.id})" class="btn btn-success" title="deposit" target="_blank">Deposit <i class="glyphicon glyphicon-log-in"></i></a>
-                                    <a :href="route('app.balances.withdrawal', {code: secondary_asset_data.id})" class="btn" title="withdrawal" target="_blank">Withdrawal <i class="glyphicon glyphicon-log-out"></i></a>
+                                    <a :href="route('app.balances.deposit', {code: secondary_asset_data.code})" class="btn btn-success" title="deposit" target="_blank">Deposit <i class="glyphicon glyphicon-log-in"></i></a>
+                                    <a :href="route('app.balances.withdrawal', {code: secondary_asset_data.code})" class="btn" title="withdrawal" target="_blank">Withdrawal <i class="glyphicon glyphicon-log-out"></i></a>
                                 </div>
                             </div>
                         </div>

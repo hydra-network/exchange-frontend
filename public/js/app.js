@@ -36366,7 +36366,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "btn btn-success",
     attrs: {
       "href": _vm.route('app.balances.deposit', {
-        code: _vm.secondary_asset_data.id
+        code: _vm.secondary_asset_data.code
       }),
       "title": "deposit",
       "target": "_blank"
@@ -36377,7 +36377,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "btn",
     attrs: {
       "href": _vm.route('app.balances.withdrawal', {
-        code: _vm.secondary_asset_data.id
+        code: _vm.secondary_asset_data.code
       }),
       "title": "withdrawal",
       "target": "_blank"
