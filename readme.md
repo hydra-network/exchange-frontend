@@ -11,7 +11,7 @@ This is why the name of project is Hydra. There will not be the main head, every
 an another one head of project, just installing the node to server or committing some code. Or even by
 creation of independent fork (all forks are welcome). 
 
-![Zgorinich](https://user-images.githubusercontent.com/8104605/60265924-9bccb280-98ef-11e9-84b6-f5fe39cc2ff7.jpg)
+![hydra](https://user-images.githubusercontent.com/8104605/60806324-5cbe1d00-a18b-11e9-8412-e3af1bd91229.png)
 
 _Zmey Gorynych (on picture) is a fork of Hydra character in Russian folklore._ 
 
