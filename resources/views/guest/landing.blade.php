@@ -15,7 +15,7 @@
     <style>
         body {
             font-family: 'PT Sans Caption', sans-serif;
-            background-color: #040c17;
+            background-color: #0f2440;
         }
         header {
               -webkit-background-size: cover;
