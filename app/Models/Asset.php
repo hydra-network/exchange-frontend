@@ -10,6 +10,8 @@ class Asset extends Model
     const STATUS_ACTIVE = 1;
     const STATUS_INACTIVE = 2;
 
+    protected $fillable = ['type', 'asset_id', 'quantity', 'user_id', 'deal_id', 'deposit_id', 'withdrawal_id', 'order_id', 'balance'];
+
     public function getNode()
     {
         return $this->hasOne('App\Models\NodeServer');
