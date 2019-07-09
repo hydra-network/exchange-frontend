@@ -4,21 +4,25 @@ namespace Tests;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
+use Illuminate\Support\Facades\Artisan;
 
 abstract class TestCase extends BaseTestCase
 {
     use CreatesApplication;
 
-    /**
-     * @param null $user
-     * @return $this
-     */
-    protected function signIn($user = null)
+    private $seeded = false;
+
+    public function setUp() : void
     {
-        $user = $user ?: create(User::class);
+        parent::setUp();
 
-        $this->actingAs($user);
+        Artisan::call('db:seed');
+    }
 
-        return $this;
+    static function getTestUserToken()
+    {
+        $token = '';
+
+        return $token;
     }
 }

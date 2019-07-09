@@ -13,12 +13,24 @@ use App\Models\Deal;
 use App\Http\Resources\OrderCollection;
 use App\Http\Requests\OrderRequest;
 use App\Jobs\Matching;
+use Auth;
 
 class MarketController extends Controller
 {
+    private $user;
+
+    public function __construct(Request $request)
+    {
+        if ($auth = $request->header('Authorization')) {
+            $this->user = Auth::guard('api')->setToken(str_replace('Bearer ', '', $auth))->user();
+        } else {
+            $this->user = auth()->user();
+        }
+    }
+
     public function getMyOrderModelsList()
     {
-        $orders = OrderModel::where('user_id', auth()->user()->id)
+        $orders = OrderModel::where('user_id', $this->user->id)
             ->whereIn('status', [OrderModel::STATUS_NEW, OrderModel::STATUS_ACTIVE, OrderModel::STATUS_PARTIAL])
             ->OrderBy('id', 'DESC')
             ->limit(100);
@@ -30,7 +42,7 @@ class MarketController extends Controller
     {
         $pair = PairModel::where('code', $code)->firstOrFail();
 
-        $market = new Market($pair, auth()->user());
+        $market = new Market($pair, $this->user);
 
         $dealsList = $market->dealsHistory($my, $buy, $sell)->paginate(50)->toArray();
 
@@ -52,7 +64,7 @@ class MarketController extends Controller
 
         $pair = PairModel::where('code', $request->input('pair'))->firstOrFail();
 
-        $broker = new Broker(auth()->user());
+        $broker = new Broker($this->user);
         $order = $broker->addOrder($pair, $type, $quantity, $price);
 
         if (!$order->id) {
@@ -68,7 +80,7 @@ class MarketController extends Controller
     {
         $id = $request->input('id');
 
-        $broker = new Broker(auth()->user());
+        $broker = new Broker($this->user);
 
         $broker->cancelOrder($id);
 
@@ -116,7 +128,7 @@ class MarketController extends Controller
 
         $alerts = [];
 
-        $market = new Market($pair, auth()->user());
+        $market = new Market($pair, $this->user);
 
         $freshDeals = $market->myNewDeals()->get();
 
@@ -150,7 +162,7 @@ class MarketController extends Controller
         
         $pair = PairModel::where('code', $code)->firstOrFail();
 
-        $market = new Market($pair, auth()->user());
+        $market = new Market($pair, $this->user);
 
         return $market->getTicks($period, $limit);
     }
@@ -159,13 +171,13 @@ class MarketController extends Controller
     {
         $pair = PairModel::where('code', $code)->firstOrFail();
 
-        $market = new Market($pair, auth()->user());
+        $market = new Market($pair, $this->user);
 
         $list = $market->activeOrders($type)->paginate(10)->toArray();
         $myList = $market->myactiveOrders($type)->limit(100)->get()->toArray();
 
-        if (auth()->user()) {
-            if ($myPrices = OrderModel::where('user_id', auth()->user()->id)->whereIn('status', [OrderModel::STATUS_NEW, OrderModel::STATUS_ACTIVE, OrderModel::STATUS_PARTIAL])->groupBy('price')->pluck('price')->toArray()) {
+        if ($this->user) {
+            if ($myPrices = OrderModel::where('user_id', $this->user->id)->whereIn('status', [OrderModel::STATUS_NEW, OrderModel::STATUS_ACTIVE, OrderModel::STATUS_PARTIAL])->groupBy('price')->pluck('price')->toArray()) {
                 foreach ($list['data'] as $order) {
                     $order->my = (in_array($order->price, $myPrices)) ? true : false;
                 }

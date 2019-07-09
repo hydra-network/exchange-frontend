@@ -657,6 +657,10 @@
                 this.secondary_asset_io_balance = hydra.market.secondary_asset_io_balance;
                 this.secondary_asset_data = hydra.market.secondary_asset;
                 this.primary_asset_data = hydra.market.primary_asset;
+
+                if (hydra.auth_token) {
+                    axios.defaults.headers.common['Authorization'] = 'Bearer ' + hydra.auth_token;
+                }
             }
 
             let chart_period;

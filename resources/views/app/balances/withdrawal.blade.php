@@ -5,9 +5,10 @@
 @section('js')
     <script>
         var hydra = {
-            deposit: {
-                currency: '{{ $currency->code  }}'
+            withdrawal: {
+                currency: '{{ $currency->code  }}',
             },
+            auth_token: '{{(auth()->user() ? JWTAuth::fromUser(auth()->user()) : '')}}'
         }
     </script>
 @endsection

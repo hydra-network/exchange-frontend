@@ -1677,8 +1677,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         }
     },
     mounted: function mounted() {
-        if (coinmonkey && coinmonkey.deposit) {
-            this.currencyCode = coinmonkey.deposit.currency;
+        if (hydra && hydra.deposit) {
+            this.currencyCode = hydra.deposit.currency;
+        }
+
+        if (hydra.auth_token) {
+            axios.defaults.headers.common['Authorization'] = 'Bearer ' + hydra.auth_token;
         }
 
         var that = this;
@@ -2613,6 +2617,10 @@ var notifier = new __WEBPACK_IMPORTED_MODULE_2_awesome_notifications___default.a
             this.secondary_asset_io_balance = hydra.market.secondary_asset_io_balance;
             this.secondary_asset_data = hydra.market.secondary_asset;
             this.primary_asset_data = hydra.market.primary_asset;
+
+            if (hydra.auth_token) {
+                __WEBPACK_IMPORTED_MODULE_1_axios___default.a.defaults.headers.common['Authorization'] = 'Bearer ' + hydra.auth_token;
+            }
         }
 
         var chart_period = void 0;
@@ -2729,8 +2737,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         }
     },
     mounted: function mounted() {
-        if (coinmonkey && coinmonkey.deposit) {
-            this.currencyCode = coinmonkey.deposit.currency;
+        if (hydra && hydra.withdrawal) {
+            this.currencyCode = hydra.withdrawal.currency;
+        }
+
+        if (hydra.auth_token) {
+            axios.defaults.headers.common['Authorization'] = 'Bearer ' + hydra.auth_token;
         }
 
         var that = this;

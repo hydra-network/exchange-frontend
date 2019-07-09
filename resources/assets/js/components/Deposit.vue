@@ -47,8 +47,12 @@
             },
         },
         mounted() {
-            if(coinmonkey && coinmonkey.deposit) {
-                this.currencyCode = coinmonkey.deposit.currency;
+            if(hydra && hydra.deposit) {
+                this.currencyCode = hydra.deposit.currency;
+            }
+
+            if (hydra.auth_token) {
+                axios.defaults.headers.common['Authorization'] = 'Bearer ' + hydra.auth_token;
             }
 
             var that = this;

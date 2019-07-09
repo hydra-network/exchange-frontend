@@ -173,6 +173,7 @@ return [
         App\Providers\RouteServiceProvider::class,
         Tightenco\Ziggy\ZiggyServiceProvider::class,
         Rdehnhardt\Html\HtmlServiceProvider::class,
+        Tymon\JWTAuth\Providers\LaravelServiceProvider::class
     ],
 
     /*

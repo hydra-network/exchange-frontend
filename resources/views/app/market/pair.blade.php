@@ -25,6 +25,7 @@
                 user_id: {{(auth()->user()) ? auth()->user()->id : 0 }},
                 chart_period: {{ ($period = session('chart_period')) ? (int) $period : 60 }}
             },
+            auth_token: '{{(auth()->user() ? JWTAuth::fromUser(auth()->user()) : '')}}'
         }
     </script>
 @endsection

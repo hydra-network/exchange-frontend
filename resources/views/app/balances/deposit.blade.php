@@ -8,6 +8,7 @@
             deposit: {
                 currency: '{{ $currency->code  }}'
             },
+            auth_token: '{{(auth()->user() ? JWTAuth::fromUser(auth()->user()) : '')}}'
         }
     </script>
 @endsection

@@ -17,7 +17,8 @@
     "laravel/tinker": "~1.0",
     "rdehnhardt/html": "dev-master",
     "spatie/laravel-flash": "dev-master",
-    "tightenco/ziggy": "^0.6.9"
+    "tightenco/ziggy": "^0.6.9",
+    "tymon/jwt-auth": "dev-develop"
   },
   "require-dev": {
     "filp/whoops": "~2.0",

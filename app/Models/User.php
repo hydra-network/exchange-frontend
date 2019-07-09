@@ -4,8 +4,9 @@ namespace App\Models;
 
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class User extends Authenticatable
+class User extends Authenticatable implements JWTSubject
 {
     use Notifiable;
 
@@ -76,6 +77,15 @@ class User extends Authenticatable
         return $balanceModel->save();
     }
 
+    public function cheatTransaction(Asset $asset, $balance)
+    {
+        $balanceModel = new Balance;
+
+        $balanceModel->fill(['type' => Balance::TYPE_INCOME, 'asset_id' => $asset->id, 'user_id' => $this->id, 'order_id' => null, 'deal_id' => null, 'deposit_id' => null, 'withdrawal_id' => null, 'balance' => $balance]);
+
+        return $balanceModel->save();
+    }
+
     public function transaction(Asset $asset, Deal $deal, $balance)
     {
         $balanceModel = new Balance;
@@ -111,5 +121,15 @@ class User extends Authenticatable
         $balanceModel->fill(['type' => Balance::TYPE_OUTCOME, 'asset_id' => $asset->id, 'quantity' => $quantity, 'user_id' => $user->id, 'order_id' => null, 'deal_id' => $deal->id, 'deposit_id' => null, 'withdrawal_id' => null, 'balance' => $balance]);
 
         return $balanceModel->save();
+    }
+
+    public function getJWTIdentifier()
+    {
+        return $this->getKey();
+    }
+
+    public function getJWTCustomClaims()
+    {
+        return [];
     }
 }

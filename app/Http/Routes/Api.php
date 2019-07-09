@@ -9,8 +9,9 @@ class Api
     public function map(Registrar $router)
     {
         $router->group([
+            'guard' => 'api',
             'prefix' => 'api',
-            'middleware' => ['auth'],
+            'middleware' => 'jwt.auth',
         ], function ($router) {
             $router->group([
                 'prefix' => 'v1',
@@ -18,23 +19,22 @@ class Api
                 $router->get('balances/deposit/getAddress/{code}', 'BalancesController@getDepositAddress')->name('deposit.address');
                 $router->get('balances/deposit/getList/{code}', 'BalancesController@getDepositList')->name('deposit.list');
                 $router->get('balances/withdrawal/getList/{code}', 'BalancesController@getWithdrawalList')->name('withdrawal.list');
-
                 $router->post('balances/withdrawal/order', 'BalancesController@withdrawalOrder');
+
+                $router->post('login', 'AuthController@login');
+                $router->post('logout', 'AuthController@logout');
+                $router->post('refresh', 'AuthController@refresh');
+                $router->post('me', 'AuthController@me');
             });
         });
 
         $router->group([
+            'guard' => 'api',
             'prefix' => 'api',
         ], function ($router) {
             $router->group([
                 'prefix' => 'v1',
             ], function ($router) {
-                $router->get('balances/deposit/getAddress/{code}', 'BalancesController@getDepositAddress')->name('deposit.address');
-                $router->get('balances/deposit/getList/{code}', 'BalancesController@getDepositList')->name('deposit.list');
-                $router->get('balances/withdrawal/getList/{code}', 'BalancesController@getWithdrawalList')->name('withdrawal.list');
-
-                $router->post('balances/withdrawal/order', 'BalancesController@withdrawalOrder');
-
                 $router->get('market/getTicks/{code}/{period}', 'MarketController@getTicks')->name('market.ticker');
                 $router->get('market/getBalance/{code}', 'MarketController@getBalances')->name('market.balance');
                 $router->get('market/getSummary/{code}', 'MarketController@getSummaryInfo')->name('market.summary');
@@ -43,13 +43,13 @@ class Api
                 $router->get('market/deals/getList/{code}/{my}/{buy}/{sell}', 'MarketController@getDeals')->name('market.deals');
                 $router->post('market/order/add', 'MarketController@addOrder')->name('market.order.add');
                 $router->post('market/order/remove', 'MarketController@removeOrder')->name('market.order.remove');
-
                 /*
                 $router->post('escrow/generateLink', 'EscrowController@generateLink')->name('market.escrow.link');
                 $router->post('escrow/cancel', 'EscrowController@cancel')->name('market.escrow.cancel'); */
             });
         });
 
+        /*
         $router->group([
             'prefix' => 'api',
         ], function ($router) {
@@ -61,5 +61,6 @@ class Api
                 $router->post('escrow/activateOrder/{id}', 'EscrowController@activateOrder');
             });
         });
+        */
     }
 }

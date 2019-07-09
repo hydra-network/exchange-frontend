@@ -9,7 +9,7 @@
 
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
-    <link rel="icon" type="image/png" href="/img/favicon.ico">
+    <link rel="icon" type="image/png" href="/img/favicon.png">
     <!-- Styles -->
     <style>
         html, body {
