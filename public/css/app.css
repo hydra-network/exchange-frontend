@@ -1,5 +1,10 @@
 @charset "UTF-8";
 
+@font-face {
+  font-family: 'Roboto';
+  src: url(/fonts/Roboto-Regular.ttf?18d44f79b3979ec168862093208c6d7d);
+}
+
 @-webkit-keyframes awn-fade-in {
   from {
     opacity: 0;

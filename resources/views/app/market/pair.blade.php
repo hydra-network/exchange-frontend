@@ -3,7 +3,7 @@
 @section('title', $primary_asset->code . '/' . $secondary_asset->code . " trade")
 
 @section('head')
-    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
+
 @endsection
 
 @section('js')

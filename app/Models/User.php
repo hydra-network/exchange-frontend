@@ -132,4 +132,9 @@ class User extends Authenticatable implements JWTSubject
     {
         return [];
     }
+
+    public function getAuthToken()
+    {
+        return \JWTAuth::fromUser($this);
+    }
 }

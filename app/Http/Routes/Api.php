@@ -31,6 +31,7 @@ class Api
         $router->group([
             'guard' => 'api',
             'prefix' => 'api',
+            'middleware' => 'jwt.verify',
         ], function ($router) {
             $router->group([
                 'prefix' => 'v1',

@@ -56,7 +56,7 @@ class DatabaseSeeder extends Seeder
             'min_trade_amount' => 1,
             'withdrawal_fees' => 1,
             'exchange_fees' => 0,
-            'subunits' => 8,
+            'subunits' => 100000000,
             'round' => 8,
         ]);
 
@@ -74,8 +74,8 @@ class DatabaseSeeder extends Seeder
             'min_trade_amount' => 1,
             'withdrawal_fees' => 1,
             'exchange_fees' => 0,
-            'subunits' => 8,
-            'round' => 8,
+            'subunits' => 100,
+            'round' => 2,
         ]);
 
         Pair::create([

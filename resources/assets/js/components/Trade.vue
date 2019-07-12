@@ -773,7 +773,7 @@
     }
 
     .trade-table td, .trade-table th {
-        font-family: 'Roboto Mono';
+        font-family: 'Roboto';
     }
 
     .dataTable td {

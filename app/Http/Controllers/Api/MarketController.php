@@ -17,15 +17,11 @@ use Auth;
 
 class MarketController extends Controller
 {
-    private $user;
+    private $user = null;
 
     public function __construct(Request $request)
     {
-        if ($auth = $request->header('Authorization')) {
-            $this->user = Auth::guard('api')->setToken(str_replace('Bearer ', '', $auth))->user();
-        } else {
-            $this->user = auth()->user();
-        }
+        $this->user = auth()->user();
     }
 
     public function getMyOrderModelsList()

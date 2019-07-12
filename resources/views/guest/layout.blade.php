@@ -8,14 +8,14 @@
     <title>{{ config('app.name') }}</title>
 
     <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
+
     <link rel="icon" type="image/png" href="/img/favicon.png">
     <!-- Styles -->
     <style>
         html, body {
             background-color: #fff;
             color: #636b6f;
-            font-family: 'Roboto Mono', sans-serif;
+            font-family: 'Roboto', sans-serif;
             font-weight: 100;
             height: 100vh;
             margin: 0;

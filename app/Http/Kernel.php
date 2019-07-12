@@ -58,5 +58,6 @@ class Kernel extends HttpKernel
         //'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         //'2fa' => \App\Http\Middleware\Google2FAMiddleware::class,
         'jwt.auth' => \Tymon\JWTAuth\Http\Middleware\Authenticate::class,
+        'jwt.verify' => \App\Http\Middleware\JwtMiddleware::class,
     ];
 }

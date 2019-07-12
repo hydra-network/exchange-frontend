@@ -17,38 +17,62 @@ class ApiTest extends TestCase
     private $seller1;
     private $seller2;
 
+    private $pairName = 'DA1-DA2';
+
+    private $participantBalances = [
+        'buyer1' => [1, [100000000, 2560000]],
+        'buyer2' => [2, [0, 1000000.14]],
+        'seller1' => [3, [0, 0]],
+        'seller2' => [4, [1200000000, 990000.1]],
+    ];
+
     private $primaryAsset;
     private $secondaryAsset;
 
-    public function testBasicUseCase()
+    public function __construct(?string $name = null, array $data = [], string $dataName = '')
+    {
+        parent::__construct($name, $data, $dataName);
+    }
+
+    public function testUserBalancesCase()
     {
         $this->createEntities();
 
-        $answer = $this->json(
-            'post',
-            '/api/v1/market/getSummary/BTCT-LTCT',
-            ['count' => 1]
-        )   ->assertStatus(200)
-            ->getOriginalContent();
+        foreach ($this->participantBalances as $key => $balancesData) {
+            $answer = $this->get(
+                route('market.balance', ['code' => $this->pairName]),
+                ['Authorization' => 'Bearer ' . $this->{$key}->getAuthToken()]
+            )
+                ->assertStatus(200)
+                ->getContent();
 
-        $this->assertEquals(1, $answer['response']['test']);
+            $json = json_decode($answer, true);
+
+            $this->assertEquals($balancesData[1][0], $json['primary_asset']);
+            $this->assertEquals($balancesData[1][1], $json['secondary_asset']);
+
+            $this->assertEquals(0, $json['primary_asset_unc_balance']);
+            $this->assertEquals(0, $json['secondary_asset_unc_balance']);
+            $this->assertEquals(0, $json['primary_asset_io_balance']);
+            $this->assertEquals(0, $json['secondary_asset_io_balance']);
+        }
     }
 
     private function createEntities()
     {
-        $this->buyer1 = User::whereId(1)->firstOrFail();
-        $this->buyer2 = User::whereId(2)->firstOrFail();
-
-        $this->seller1 = User::whereId(3)->firstOrFail();
-        $this->seller2 = User::whereId(4)->firstOrFail();
-
         $this->primaryAsset = Asset::whereId(1)->firstOrFail();
         $this->secondaryAsset = Asset::whereId(2)->firstOrFail();
 
-        $this->buyer1->cheatTransaction($this->primaryAsset, 1*100000000);
-        $this->buyer1->cheatTransaction($this->secondaryAsset, 10*100000000);
+        foreach ($this->participantBalances as $key => $balancesData) {
+            $this->{$key} = User::whereId($balancesData[0])->firstOrFail();
 
-        $this->seller1->cheatTransaction($this->primaryAsset, 2*100000000);
-        $this->seller2->cheatTransaction($this->secondaryAsset, 20*100000000);
+            if ($balancesData[1][0]) {
+                $this->{$key}->cheatTransaction($this->primaryAsset, $balancesData[1][0]);
+            }
+
+            if ($balancesData[1][1]) {
+                $this->{$key}->cheatTransaction($this->primaryAsset, $balancesData[1][1]);
+            }
+        }
     }
 }
