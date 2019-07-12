@@ -21,7 +21,7 @@ class MarketController extends Controller
 
     public function __construct(Request $request)
     {
-        $this->user = auth()->user();
+        $this->user = \JWTAuth::parseToken()->authenticate();;
     }
 
     public function getMyOrderModelsList()
