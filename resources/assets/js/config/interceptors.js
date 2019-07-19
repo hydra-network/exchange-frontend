@@ -11,6 +11,10 @@ axios.interceptors.response.use(
                 Vue.prototype.$awn.warning('Whoops, something went wrong');
                 break;
 
+            case 419:
+                Vue.prototype.$awn.warning('Whoops, something went wrong');
+                break;
+
             case 422:
                 let errors = _.values(error.response.data.errors);
                 Vue.prototype.$awn.warning(_.first(errors)[0]);

@@ -582,8 +582,8 @@
                     return false;
                 }
 
-                let quantity = that.order_quantity*that.secondary_asset_data.subunits;
-                let price = that.order_price*that.primary_asset_data.subunits;
+                let quantity = that.order_quantity;
+                let price = that.order_price;
 
                 axios.post(route("market.order.add"), {pair: this.pair, type: type, quantity: quantity, price: price})
                     .then((response) => {

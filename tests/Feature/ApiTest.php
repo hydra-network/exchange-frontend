@@ -34,7 +34,7 @@ class ApiTest extends TestCase
         parent::__construct($name, $data, $dataName);
     }
 
-    public function testUserBalances()
+    private function testUserBalances()
     {
         $this->createEntities();
 
@@ -47,17 +47,32 @@ class ApiTest extends TestCase
     {
         $this->createEntities();
 
-        $quantity = 0.00129;
+        $quantity = 1.1;
+        $price = 13100.09;
 
-        //Sellers places order to sell 1 BTC
-        $json = $this->createOrder($this->seller1, Order::TYPE_SELL, $quantity, 13100.09, $this->pairName);
+
+        //Buyer places order to buy
+        $json = $this->createOrder($this->buyer1, Order::TYPE_BUY, $quantity, $price, $this->pairName);
 
         $this->assertEquals(1, $json['order_id']);
 
-        $this->checkBalance($this->seller1, ($this->participantBalances['seller1'][1][0]-$quantity), $this->participantBalances['seller1'][1][1]);
+        $primaryBalance = $this->participantBalances['buyer1'][1][0];
+        $secondaryBalance = $this->participantBalances['buyer1'][1][1];
+
+        $this->checkBalance($this->seller1, $primaryBalance-($quantity*$price), $secondaryBalance, 0, 0);
+
+        //Sellers places order to sell
+        $json = $this->createOrder($this->seller1, Order::TYPE_SELL, $quantity, $price, $this->pairName);
+
+        $this->assertEquals(1, $json['order_id']);
+
+        $primaryBalance = $this->participantBalances['seller1'][1][0];
+        $secondaryBalance = $this->participantBalances['seller1'][1][1];
+
+        $this->checkBalance($this->seller1, $primaryBalance, ($secondaryBalance-$quantity), 0, $quantity);
     }
 
-    private function checkBalance($user, $primaryAsset, $secondaryAsset)
+    private function checkBalance($user, $primaryAsset, $secondaryAsset, $primaryIOBalance = 0, $secondaryIOBalance = 0)
     {
         $answer = $this->get(
             route('market.balance', ['code' => $this->pairName]),
@@ -73,8 +88,8 @@ class ApiTest extends TestCase
 
         $this->assertEquals(0, $json['primary_asset_unc_balance']);
         $this->assertEquals(0, $json['secondary_asset_unc_balance']);
-        $this->assertEquals(0, $json['primary_asset_io_balance']);
-        $this->assertEquals(0, $json['secondary_asset_io_balance']);
+        $this->assertEquals($primaryIOBalance, str_replace(" ", '', $json['primary_asset_io_balance']));
+        $this->assertEquals($secondaryIOBalance, str_replace(" ", '', $json['secondary_asset_io_balance']));
     }
 
     private function createOrder($user, $type, $quantity, $price, $pair)
@@ -82,10 +97,10 @@ class ApiTest extends TestCase
         $answer = $this->post(
             route('market.order.add'),
             [
-                'type' => Order::TYPE_SELL,
-                'quantity' => 1,
-                'price' => 13100.09,
-                'pair' => $this->pairName
+                'type' => $type,
+                'quantity' => $quantity,
+                'price' => $price,
+                'pair' => $pair
             ],
             ['Authorization' => 'Bearer ' . $user->getAuthToken()]
         )

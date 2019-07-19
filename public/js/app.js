@@ -2534,8 +2534,8 @@ var notifier = new __WEBPACK_IMPORTED_MODULE_2_awesome_notifications___default.a
                 return false;
             }
 
-            var quantity = that.order_quantity * that.secondary_asset_data.subunits;
-            var price = that.order_price * that.primary_asset_data.subunits;
+            var quantity = that.order_quantity;
+            var price = that.order_price;
 
             __WEBPACK_IMPORTED_MODULE_1_axios___default.a.post(route("market.order.add"), { pair: this.pair, type: type, quantity: quantity, price: price }).then(function (response) {
                 that.reset();
@@ -47712,6 +47712,10 @@ axios.interceptors.response.use(function (response) {
 }, function (error) {
     switch (error.response.status) {
         case 500:
+            __WEBPACK_IMPORTED_MODULE_0_vue___default.a.prototype.$awn.warning('Whoops, something went wrong');
+            break;
+
+        case 419:
             __WEBPACK_IMPORTED_MODULE_0_vue___default.a.prototype.$awn.warning('Whoops, something went wrong');
             break;
 

@@ -24,7 +24,11 @@ class Broker
         $client = $this->client;
 
         DB::transaction(function() use ($order, $pair, $type, $quantity, $price, $client) {
-            $cost = $quantity*($price/$pair->primary->subunits);
+
+            $cost = ($quantity*$price)*$pair->primary->subunits;
+            $quantity = $quantity*$pair->secondary->subunits;
+
+            $price = $price*$pair->primary->subunits;
 
             $order->fill([
                 'pair_id' => $pair->id,
@@ -53,9 +57,9 @@ class Broker
         \DB::transaction(function() use ($order, $client) {
             $pair = $order->pair;
 
-            $currency = ($order->type == Order::TYPE_SELL) ? $pair->secondary : $pair->primary;
+            $currency = ($order->type == Order::TYPE_BUY) ? $pair->primary : $pair->secondary;
 
-            $quantity = ($order->type == Order::TYPE_BUY) ? ($order->quantity_remain*$order->price)/$pair->primary->subunits : $quantity = $order->quantity_remain;
+            $quantity = ($order->type == Order::TYPE_BUY) ? $order->cost_remain : $order->quantity_remain;
 
             $client->unfreezeAssets($currency, $order, $quantity);
 

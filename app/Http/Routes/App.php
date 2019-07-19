@@ -17,7 +17,7 @@ class App
             $router->get('market/{code}', 'MarketController@pair')->name('market.pair');
         });
 
-        $router->group(['prefix' => 'app', 'middleware' => ['auth'], 'as' => 'app.'], function () use ($router) {
+        $router->group(['prefix' => 'app', 'middleware' => ['auth', 'csrf'], 'as' => 'app.'], function () use ($router) {
             # Profile
             $router->post('profile', 'ProfileController@update')->name('profile.store');
             $router->get('profile', 'ProfileController@index')->name('profile');

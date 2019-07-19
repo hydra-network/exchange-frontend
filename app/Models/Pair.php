@@ -111,7 +111,7 @@ class Pair extends Model
             ->where('user_id', auth()->user()->id)
             ->where('type', Order::TYPE_SELL)
             ->sum('quantity_remain')) {
-            return $this->primary->format($sum);
+            return $this->secondary->format($sum);
         }
 
         return 0;
