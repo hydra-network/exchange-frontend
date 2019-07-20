@@ -36,8 +36,8 @@ class OrderRequest extends FormRequest
             'quantity' => [
                 'required',
                 'numeric',
+                new BalanceChecker($pair, $this->input('type'), $this->input('quantity'), $this->input('price')),
                 new SecondaryAssetRestrictions($pair, $this->input('type'), $this->input('quantity'), $this->input('price')),
-                new BalanceChecker($pair, $this->input('type'), $this->input('quantity'), $this->input('price'))
             ],
             'price' => 'required|numeric|min:0.00000001',
         ];

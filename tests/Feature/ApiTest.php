@@ -17,62 +17,48 @@ class ApiTest extends TestCase
     private $seller1;
     private $seller2;
 
-    private $pairName = 'DA1-DA2';
+    private $pairName = 'BTC-ETH';
 
     private $participantBalances = [
-        'buyer1' => [1, [0.00001, 25600]],
-        'buyer2' => [2, [0, 100.14]],
-        'seller1' => [3, [12, 5670.1]],
-        'seller2' => [4, [0.0001, 99.1]],
+        'buyer1' => ['id' => 1, 'balance' => ['bitcoin' => 100, 'ether' => 0]], //[id, [bitcoin, ether]]
+        'buyer2' => ['id' => 2, 'balance' => ['bitcoin' => 300, 'ether' => 100]],
+        'seller1' => ['id' => 3, 'balance' => ['bitcoin' => 0, 'ether' => 500]],
+        'seller2' => ['id' => 4, 'balance' => ['bitcoin' => 0.0001, 'ether' => 700]],
     ];
 
-    private $primaryAsset;
-    private $secondaryAsset;
-
-    public function __construct(?string $name = null, array $data = [], string $dataName = '')
-    {
-        parent::__construct($name, $data, $dataName);
-    }
-
-    private function testUserBalances()
-    {
-        $this->createEntities();
-
-        foreach ($this->participantBalances as $key => $balancesData) {
-            $this->checkBalance($this->{$key}, $balancesData[1][0], $balancesData[1][1]);
-        }
-    }
+    private $bitcoinAsset;
+    private $etherAsset;
 
     public function testBalanceFreezing()
     {
         $this->createEntities();
 
-        $quantity = 1.1;
-        $price = 13100.09;
+        $quantity = 1;
+        $price = 2;
 
+        //Sellers places an order to sell
+        $bitcoinBalance = $this->participantBalances['seller1']['balance']['bitcoin'];
+        $etherBalance = $this->participantBalances['seller1']['balance']['ether'];
+        $this->createOrder($this->seller1, Order::TYPE_SELL, $quantity, $price);
+        $this->checkBalance($this->seller1, $bitcoinBalance, ($etherBalance-$quantity), 0, $quantity);
 
-        //Buyer places order to buy
-        $json = $this->createOrder($this->buyer1, Order::TYPE_BUY, $quantity, $price, $this->pairName);
-
-        $this->assertEquals(1, $json['order_id']);
-
-        $primaryBalance = $this->participantBalances['buyer1'][1][0];
-        $secondaryBalance = $this->participantBalances['buyer1'][1][1];
-
-        $this->checkBalance($this->seller1, $primaryBalance-($quantity*$price), $secondaryBalance, 0, 0);
-
-        //Sellers places order to sell
-        $json = $this->createOrder($this->seller1, Order::TYPE_SELL, $quantity, $price, $this->pairName);
-
-        $this->assertEquals(1, $json['order_id']);
-
-        $primaryBalance = $this->participantBalances['seller1'][1][0];
-        $secondaryBalance = $this->participantBalances['seller1'][1][1];
-
-        $this->checkBalance($this->seller1, $primaryBalance, ($secondaryBalance-$quantity), 0, $quantity);
+        //Buyer places an order to buy
+        $bitcoinBalance = $this->participantBalances['buyer1']['balance']['bitcoin'];
+        $etherBalance = $this->participantBalances['buyer1']['balance']['ether'];
+        $this->createOrder($this->buyer1, Order::TYPE_BUY, $quantity, $price);
+        $this->checkBalance($this->buyer1, $bitcoinBalance-($quantity*$price), $etherBalance, ($quantity*$price), 0);
     }
+    /*
+    public function testUserBalances()
+    {
+        $this->createEntities();
 
-    private function checkBalance($user, $primaryAsset, $secondaryAsset, $primaryIOBalance = 0, $secondaryIOBalance = 0)
+        foreach ($this->participantBalances as $key => $balanceData) {
+            $this->checkBalance($this->{$key}, $balanceData['balance']['bitcoin'], $balanceData['balance']['ether']);
+        }
+    }
+    */
+    private function checkBalance($user, $bitcoinAsset, $etherAsset, $bitcoinIOBalance = 0, $etherIOBalance = 0)
     {
         $answer = $this->get(
             route('market.balance', ['code' => $this->pairName]),
@@ -83,25 +69,27 @@ class ApiTest extends TestCase
 
         $json = json_decode($answer, true);
 
-        $this->assertEquals($primaryAsset, str_replace(" ", '', $json['primary_asset']));
-        $this->assertEquals($secondaryAsset, str_replace(" ", '', $json['secondary_asset']));
+        $this->assertEquals($bitcoinAsset, str_replace(" ", '', $json['primary_asset']));
+        $this->assertEquals($etherAsset, str_replace(" ", '', $json['secondary_asset']));
 
         $this->assertEquals(0, $json['primary_asset_unc_balance']);
         $this->assertEquals(0, $json['secondary_asset_unc_balance']);
-        $this->assertEquals($primaryIOBalance, str_replace(" ", '', $json['primary_asset_io_balance']));
-        $this->assertEquals($secondaryIOBalance, str_replace(" ", '', $json['secondary_asset_io_balance']));
+        $this->assertEquals($bitcoinIOBalance, str_replace(" ", '', $json['primary_asset_io_balance']));
+        $this->assertEquals($etherIOBalance, str_replace(" ", '', $json['secondary_asset_io_balance']));
     }
 
-    private function createOrder($user, $type, $quantity, $price, $pair)
+    private function createOrder($user, $type, $quantity, $price)
     {
+        $data = [
+            'type' => $type,
+            'quantity' => $quantity,
+            'price' => $price,
+            'pair' => $this->pairName
+        ];
+
         $answer = $this->post(
             route('market.order.add'),
-            [
-                'type' => $type,
-                'quantity' => $quantity,
-                'price' => $price,
-                'pair' => $pair
-            ],
+            $data,
             ['Authorization' => 'Bearer ' . $user->getAuthToken()]
         )
             ->assertStatus(200)
@@ -117,19 +105,13 @@ class ApiTest extends TestCase
 
     private function createEntities()
     {
-        $this->primaryAsset = Asset::whereId(1)->firstOrFail();
-        $this->secondaryAsset = Asset::whereId(2)->firstOrFail();
+        $this->bitcoinAsset = Asset::whereCode('BTC')->firstOrFail();
+        $this->etherAsset = Asset::whereCode('ETH')->firstOrFail();
 
-        foreach ($this->participantBalances as $key => $balancesData) {
-            $this->{$key} = User::whereId($balancesData[0])->firstOrFail();
-
-            if ($balancesData[1][0]) {
-                $this->{$key}->cheatTransaction($this->primaryAsset, $balancesData[1][0]*$this->primaryAsset->subunits);
-            }
-
-            if ($balancesData[1][1]) {
-                $this->{$key}->cheatTransaction($this->secondaryAsset, $balancesData[1][1]*$this->secondaryAsset->subunits);
-            }
+        foreach ($this->participantBalances as $key => $balanceData) {
+            $this->{$key} = User::whereId($balanceData['id'])->firstOrFail();
+            $this->{$key}->cheatTransaction($this->bitcoinAsset, $balanceData['balance']['bitcoin']*$this->bitcoinAsset->subunits);
+            $this->{$key}->cheatTransaction($this->etherAsset, $balanceData['balance']['ether']*$this->etherAsset->subunits);
         }
     }
 }

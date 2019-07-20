@@ -16,7 +16,7 @@ abstract class TestCase extends BaseTestCase
     {
         parent::setUp();
 
-        Artisan::call('db:seed');
+        Artisan::call('db:seed --class=TestSeeder');
     }
 
     static function getTestUserToken()

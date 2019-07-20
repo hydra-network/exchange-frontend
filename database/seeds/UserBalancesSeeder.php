@@ -1,10 +1,12 @@
 <?php
 
 use Illuminate\Database\Seeder;
+use App\Models\User;
+use App\Models\Balance;
 use App\Models\Asset;
 use App\Models\Pair;
 
-class DatabaseSeeder extends Seeder
+class UserBalancesSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -59,6 +61,66 @@ class DatabaseSeeder extends Seeder
             'max_price' => null,
             'min_price' => null,
             'daily_volume_limit' => null,
+        ]);
+
+        User::create([
+            'id' => 1,
+            'name' => 'Buyer1',
+            'email' => 'demobuyer1@dexdev.ru',
+            'password' => bcrypt('123123')
+        ]);
+
+        User::create([
+            'id' => 2,
+            'name' => 'Buyer2',
+            'email' => 'demobuyer2@dexdev.ru',
+            'password' => bcrypt('123123')
+        ]);
+
+        User::create([
+            'id' => 3,
+            'name' => 'Seller1',
+            'email' => 'demoseller1@dexdev.ru',
+            'password' => bcrypt('123123')
+        ]);
+
+        User::create([
+            'id' => 4,
+            'name' => 'Seller2',
+            'email' => 'demoseller2@dexdev.ru',
+            'password' => bcrypt('123123')
+        ]);
+
+        Balance::create([
+            'type' => 'in',
+            'asset_id' => 1,
+            'user_id' => 1,
+            'quantity' => 5*100000000,
+            'balance' => 500000000,
+        ]);
+
+        Balance::create([
+            'type' => 'in',
+            'asset_id' => 2,
+            'user_id' => 1,
+            'quantity' => 100*100,
+            'balance' => 100*100,
+        ]);
+
+        Balance::create([
+            'type' => 'in',
+            'asset_id' => 1,
+            'user_id' => 2,
+            'quantity' => 5*100000000,
+            'balance' => 500000000,
+        ]);
+
+        Balance::create([
+            'type' => 'in',
+            'asset_id' => 2,
+            'user_id' => 2,
+            'quantity' => 100*100,
+            'balance' => 100*100,
         ]);
     }
 }

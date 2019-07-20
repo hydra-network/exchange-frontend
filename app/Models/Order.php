@@ -70,6 +70,10 @@ class Order extends Model
         $asset = ($this->type == self::TYPE_BUY) ? $primary : $secondary;
         $quantity = ($this->type == self::TYPE_BUY) ? $this->cost : $this->quantity;
 
+        if (!$this->id) {
+            $this->save();
+        }
+
         $user->freezeAssets($asset, $this, $quantity);
 
         return $this->save();

@@ -46,7 +46,7 @@ class BalanceChecker implements Rule
         if ($this->type == Order::TYPE_BUY) {
             $balance = $user->getBalance($primaryAsset);
 
-            $cost = ($this->quantity * $this->price)/$primaryAsset->subunits;
+            $cost = ($this->quantity * $this->price)*$primaryAsset->subunits;
 
             if ($balance < $cost) {
                 return false;

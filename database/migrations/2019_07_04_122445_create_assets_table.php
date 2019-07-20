@@ -31,7 +31,7 @@ class CreateAssetsTable extends Migration {
 			$table->bigInteger('max_price')->nullable();
 			$table->bigInteger('min_price')->nullable();
 			$table->bigInteger('daily_volume_limit')->nullable();
-			$table->integer('subunits')->nullable();
+			$table->bigInteger('subunits')->nullable();
 			$table->integer('round')->nullable();
 			$table->timestamps();
 		});

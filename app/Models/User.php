@@ -53,11 +53,13 @@ class User extends Authenticatable implements JWTSubject
     {
         $balance = $this->getBalance($asset);
         $user = $this;
-        
         $balance = $balance - $quantity;
-        
+
+        if ($balance < 0) {
+            throw new \Exception('Balance < 0 (ID ' . $this->email . ', balance ' . $this->getBalance($asset) . ' < ' . $quantity . ')');
+        }
+
         $balanceModel = new Balance;
-        
         $balanceModel->fill(['type' => Balance::TYPE_FREEZE, 'asset_id' => $asset->id, 'quantity' => $quantity, 'user_id' => $user->id, 'order_id' => $order->id, 'deal_id' => null, 'deposit_id' => null, 'withdrawal_id' => null, 'balance' => $balance]);
 
         return $balanceModel->save();
@@ -67,11 +69,13 @@ class User extends Authenticatable implements JWTSubject
     {
         $balance = $this->getBalance($asset);
         $user = $this;
-        
         $balance = $balance + $quantity;
 
+        if ($balance < 0) {
+            throw new \Exception('Balance < 0');
+        }
+
         $balanceModel = new Balance;
-        
         $balanceModel->fill(['type' => Balance::TYPE_UNFREEZE, 'asset_id' => $asset->id, 'quantity' => $quantity, 'user_id' => $user->id, 'order_id' => $order->id, 'deal_id' => null, 'deposit_id' => null, 'withdrawal_id' => null, 'balance' => $balance]);
 
         return $balanceModel->save();
@@ -79,6 +83,10 @@ class User extends Authenticatable implements JWTSubject
 
     public function cheatTransaction(Asset $asset, $balance)
     {
+        if ($balance < 0) {
+            throw new \Exception('Balance < 0');
+        }
+
         $balanceModel = new Balance;
 
         $balanceModel->fill(['type' => Balance::TYPE_INCOME, 'asset_id' => $asset->id, 'user_id' => $this->id, 'order_id' => null, 'deal_id' => null, 'deposit_id' => null, 'withdrawal_id' => null, 'balance' => $balance]);
@@ -88,6 +96,10 @@ class User extends Authenticatable implements JWTSubject
 
     public function transaction(Asset $asset, Deal $deal, $balance)
     {
+        if ($balance < 0) {
+            throw new \Exception('Balance < 0');
+        }
+
         $balanceModel = new Balance;
 
         $balanceModel->fill(['type' => Balance::TYPE_INCOME, 'asset_id' => $asset->id, 'user_id' => $this->id, 'order_id' => null, 'deal_id' => $deal->id, 'deposit_id' => null, 'withdrawal_id' => null, 'balance' => $balance]);
@@ -99,11 +111,13 @@ class User extends Authenticatable implements JWTSubject
     {
         $balance = $this->getBalance($asset);
         $user = $this;
-        
         $balance = $balance + $quantity;
-        
+
+        if ($balance < 0) {
+            throw new \Exception('Balance < 0');
+        }
+
         $balanceModel = new Balance;
-        
         $balanceModel->fill(['type' => Balance::TYPE_INCOME, 'asset_id' => $asset->id, 'quantity' => $quantity, 'user_id' => $user->id, 'order_id' => null, 'deal_id' => $deal->id, 'deposit_id' => null, 'withdrawal_id' => null, 'balance' => $balance]);
 
         return $balanceModel->save();
@@ -113,9 +127,12 @@ class User extends Authenticatable implements JWTSubject
     {
         $balance = $this->getBalance($asset);
         $user = $this;
-        
         $balance = $balance - $quantity;
-        
+
+        if ($balance < 0) {
+            throw new \Exception('Balance < 0');
+        }
+
         $balanceModel = new Balance;
         
         $balanceModel->fill(['type' => Balance::TYPE_OUTCOME, 'asset_id' => $asset->id, 'quantity' => $quantity, 'user_id' => $user->id, 'order_id' => null, 'deal_id' => $deal->id, 'deposit_id' => null, 'withdrawal_id' => null, 'balance' => $balance]);
