@@ -48,6 +48,7 @@ class ApiTest extends TestCase
         $this->createOrder($this->buyer1, Order::TYPE_BUY, $quantity, $price);
         $this->checkBalance($this->buyer1, $bitcoinBalance-($quantity*$price), $etherBalance, ($quantity*$price), 0);
     }
+
     /*
     public function testUserBalances()
     {
@@ -56,8 +57,8 @@ class ApiTest extends TestCase
         foreach ($this->participantBalances as $key => $balanceData) {
             $this->checkBalance($this->{$key}, $balanceData['balance']['bitcoin'], $balanceData['balance']['ether']);
         }
-    }
-    */
+    } */
+
     private function checkBalance($user, $bitcoinAsset, $etherAsset, $bitcoinIOBalance = 0, $etherIOBalance = 0)
     {
         $answer = $this->get(

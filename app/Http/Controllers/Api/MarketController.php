@@ -17,16 +17,9 @@ use Auth;
 
 class MarketController extends Controller
 {
-    private $user = null;
-
-    public function __construct(Request $request)
-    {
-        $this->user = \JWTAuth::parseToken()->authenticate();;
-    }
-
     public function getMyOrderModelsList()
     {
-        $orders = OrderModel::where('user_id', $this->user->id)
+        $orders = OrderModel::where('user_id', $this->getUser()->id)
             ->whereIn('status', [OrderModel::STATUS_NEW, OrderModel::STATUS_ACTIVE, OrderModel::STATUS_PARTIAL])
             ->OrderBy('id', 'DESC')
             ->limit(100);
@@ -38,7 +31,7 @@ class MarketController extends Controller
     {
         $pair = PairModel::where('code', $code)->firstOrFail();
 
-        $market = new Market($pair, $this->user);
+        $market = new Market($pair, $this->getUser());
 
         $dealsList = $market->dealsHistory($my, $buy, $sell)->paginate(50)->toArray();
 
@@ -60,7 +53,7 @@ class MarketController extends Controller
 
         $pair = PairModel::where('code', $request->input('pair'))->firstOrFail();
 
-        $broker = new Broker($this->user);
+        $broker = new Broker($this->getUser());
         $order = $broker->addOrder($pair, $type, $quantity, $price);
 
         if (!$order->id) {
@@ -76,7 +69,7 @@ class MarketController extends Controller
     {
         $id = $request->input('id');
 
-        $broker = new Broker($this->user);
+        $broker = new Broker($this->getUser());
 
         $broker->cancelOrder($id);
 
@@ -86,7 +79,7 @@ class MarketController extends Controller
     public function getBalances($code)
     {
         $pair = PairModel::where('code', $code)->firstOrFail();
-        
+
         $primaryAsset = $pair->primary;
         $secondaryAsset = $pair->secondary;
         
@@ -124,7 +117,7 @@ class MarketController extends Controller
 
         $alerts = [];
 
-        $market = new Market($pair, $this->user);
+        $market = new Market($pair, $this->getUser());
 
         $freshDeals = $market->myNewDeals()->get();
 
@@ -158,7 +151,7 @@ class MarketController extends Controller
         
         $pair = PairModel::where('code', $code)->firstOrFail();
 
-        $market = new Market($pair, $this->user);
+        $market = new Market($pair, $this->getUser());
 
         return $market->getTicks($period, $limit);
     }
@@ -167,13 +160,13 @@ class MarketController extends Controller
     {
         $pair = PairModel::where('code', $code)->firstOrFail();
 
-        $market = new Market($pair, $this->user);
+        $market = new Market($pair, $this->getUser());
 
         $list = $market->activeOrders($type)->paginate(10)->toArray();
         $myList = $market->myactiveOrders($type)->limit(100)->get()->toArray();
 
-        if ($this->user) {
-            if ($myPrices = OrderModel::where('user_id', $this->user->id)->whereIn('status', [OrderModel::STATUS_NEW, OrderModel::STATUS_ACTIVE, OrderModel::STATUS_PARTIAL])->groupBy('price')->pluck('price')->toArray()) {
+        if ($this->getUser()) {
+            if ($myPrices = OrderModel::where('user_id', $this->getUser()->id)->whereIn('status', [OrderModel::STATUS_NEW, OrderModel::STATUS_ACTIVE, OrderModel::STATUS_PARTIAL])->groupBy('price')->pluck('price')->toArray()) {
                 foreach ($list['data'] as $order) {
                     $order->my = (in_array($order->price, $myPrices)) ? true : false;
                 }
@@ -186,5 +179,10 @@ class MarketController extends Controller
             'list' => $list,
             'my_list' => Formatter::formatObjects($pair, $myList),
         ];
+    }
+
+    private function getUser()
+    {
+        return auth()->user();
     }
 }

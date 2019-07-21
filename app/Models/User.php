@@ -55,6 +55,10 @@ class User extends Authenticatable implements JWTSubject
         $user = $this;
         $balance = $balance - $quantity;
 
+        //$problemUser = self::where('email', 'demobuyer1@dexdev.ru')->first();
+
+        //echo "\n=====\nfreezeAssetsAndSave ({$problemUser->id}=={$this->id} pu amount of BTC is " . $problemUser->getBalance(Asset::whereCode('btc')->first()) . ": " . $this->email . "-balance of " . $asset->code . " is " . $this->getBalance($asset) . ", quantity to freeze is $quantity\n====\n";
+
         if ($balance < 0) {
             throw new \Exception('Balance < 0 (ID ' . $this->email . ', balance ' . $this->getBalance($asset) . ' < ' . $quantity . ')');
         }
