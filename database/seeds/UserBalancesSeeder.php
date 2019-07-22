@@ -118,6 +118,14 @@ class UserBalancesSeeder extends Seeder
         Balance::create([
             'type' => 'in',
             'asset_id' => 2,
+            'user_id' => 3,
+            'quantity' => 5*100000000,
+            'balance' => 900000000,
+        ]);
+
+        Balance::create([
+            'type' => 'in',
+            'asset_id' => 2,
             'user_id' => 4,
             'quantity' => 100*100,
             'balance' => 100*100,

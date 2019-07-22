@@ -60,7 +60,9 @@ class MarketController extends Controller
             abort(500, "System error [1]");
         }
 
-        Matching::dispatch($pair->id)->onQueue('matching');
+        if (env('APP_ENV') != 'testing') {
+            Matching::dispatch($pair->id)->onQueue('matching');
+        }
 
         return response()->json(['result' => 'success', 'order_id' => $order->id]);
     }
@@ -136,10 +138,10 @@ class MarketController extends Controller
             'primary_asset_volume' => $pair->primary->format($volumes['bid']),
             'secondary_asset_volume' => $pair->secondary->format($volumes['ask']),
             'daily_volume' =>  $pair->primary->format($volume24),
-            'bid_size' => $sizes['bid'],
-            'ask_size' => $sizes['ask'],
-            'h24' => ($h24) ? $h24 : 0,
-            'l24' => ($l24) ? $l24 : 0,
+            'bid_size' => $pair->secondary->format($sizes['bid']),
+            'ask_size' => $pair->secondary->format($sizes['ask']),
+            'h24' => ($h24) ? $pair->primary->format($h24) : 0,
+            'l24' => ($l24) ? $pair->primary->format($l24) : 0,
             'alerts' => $alerts,
             'last_price' => ($lastPrice) ? $pair->primary->format($lastPrice->price) : 0,
         ]);
