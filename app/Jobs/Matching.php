@@ -36,6 +36,8 @@ class Matching implements ShouldQueue
      */
     public function handle()
     {
+        echo "\n===\n";
+
         try {
             $pairModel = PairModel::whereId($this->pair_id)->firstOrFail();
 
@@ -46,15 +48,15 @@ class Matching implements ShouldQueue
                 echo "Counter orders found {$buyOrderModel->price} - {$sellOrderModel->price}\n";
 
                 $pair = new Pair(
-                    new Asset("BTC"), //primary asset
-                    new Asset("ETH") //secondary asset
+                    new Asset($pairModel->primary->code), //primary asset
+                    new Asset($pairModel->secondary->code) //secondary asset
                 );
 
                 $primaryAsset = $pairModel->primary;
                 $secondaryAsset = $pairModel->secondary;
 
                 $buyerBalance = new BuyerBalance(
-                        ($buyOrderModel->user->getBalance($primaryAsset) + $buyOrderModel->price),
+                        ($buyOrderModel->user->getBalance($primaryAsset) + $buyOrderModel->cost_remain),
                         $buyOrderModel->user->getBalance($secondaryAsset)
                 );
 
@@ -76,7 +78,7 @@ class Matching implements ShouldQueue
                     $sellOrderModel->quantity_remain,
                     $sellOrderModel->price/$primaryAsset->subunits,
                     $sellerBalance,
-                    $buyOrderModel->id
+                    $sellOrderModel->id
                 );
 
                 $matcher = new Matcher($buyOrder, $sellOrder);

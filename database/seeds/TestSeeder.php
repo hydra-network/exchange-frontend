@@ -47,7 +47,7 @@ class TestSeeder extends Seeder
             'withdrawal_fees' => 1,
             'exchange_fees' => 0,
             'subunits' => 100000000,
-            'round' => 2,
+            'round' => 8,
         ]);
 
         Pair::create([

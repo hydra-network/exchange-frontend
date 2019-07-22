@@ -19,8 +19,6 @@ class JwtMiddleware extends BaseMiddleware
     public function handle($request, Closure $next)
     {
         try {
-
-            echo '11111'; die;
             if ($request->header('Authorization')) {
                 $user = JWTAuth::parseToken()->authenticate();
 
