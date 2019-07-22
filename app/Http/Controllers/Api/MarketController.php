@@ -60,7 +60,7 @@ class MarketController extends Controller
             abort(500, "System error [1]");
         }
 
-        //Matching::dispatch($pair->id)->onQueue('matching');
+        Matching::dispatch($pair->id)->onQueue('matching');
 
         return response()->json(['result' => 'success', 'order_id' => $order->id]);
     }

@@ -40,9 +40,9 @@
 
             @if (auth()->user())
                 <li style="margin-top: 100px;">
-                    <a href="{{ route('app.profile') }}">
+                    <a href="{{ route('app.profile') }}" title="profile">
                         <i class="fa fa-user"></i>
-                        <p>Profile</p>
+                        <p>{{ auth()->user()->name }}</p>
                     </a>
                 </li>
 

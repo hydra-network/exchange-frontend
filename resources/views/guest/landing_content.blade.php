@@ -74,7 +74,7 @@
                             </div>
                             <div class="tab-pane" id="sign-in" role="tabpanel" aria-labelledby="sign-in">
                                 {!! Form::open(['method' => 'post', 'route' => ['login']]) !!}
-                                <div class="card">
+                                <div class="card" data-role="login-form">
                                     <div class="content-no-padding padding-h-40">
                                         <div style="margin-left: 10px;">
                                             {!! Form::openGroup('email', trans('dictionary.email')) !!}

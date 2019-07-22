@@ -47,10 +47,16 @@ php artisan db:seed
 php artisan jwt:secret
 ```
 
+Demo data:
+
+```
+php artisan db:seed --class=UserBalancesSeeder
+```
+
 Launching of queue consumer:
 
 ``
-php artisan queue:work --queue=high
+php artisan queue:work --queue=matching
 ``
 
 For now there is backend and frontend, a bit later I'll separate this repository for 2 independent components.
@@ -76,13 +82,13 @@ For now there is backend and frontend, a bit later I'll separate this repository
 
 The roadmap for short term period is:
  
- * Feature tests of API; - 28.06.2019
- * Withdrawal and deposit systems; - 30.06.2019
- * Design for page of list of markets; - 30.06.2019
- * Demo instance for demonstration of basic advantages of EX; - 05.07.2019
+ * ~~Feature tests of API; - 28.06.2019~~
+ * Withdrawal and deposit systems; - 01.07.2019
+ * ~~Design for page of list of markets; - 30.06.2019~~
+ * ~~Demo instance for demonstration of basic advantages of EX; - 05.07.2019~~
  * Landing page and video presentation of EX; - 05.07.2019
- * ~~Docker container~~, instructions for simple installation; - 07.07.2019
- * Creation of temporary ERC20 token (HYST) for period while the DEX is in development; - 10.07.2019 
+ * ~~Docker container, instructions for simple installation; - 07.07.2019~~
+ * ~~Creation of temporary ERC20 token (HDR) for period while the DEX is in development; - 10.07.2019~~
  * Launching of token trading on EX (HYST/BTC); - 15.07.2019
  * EX documentation; - 25.07.2019
  * Fees system; - 30.07.2019
