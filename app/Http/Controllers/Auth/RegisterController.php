@@ -64,11 +64,13 @@ class RegisterController extends Controller
             $message->to($emailTo, $data['name'])->subject('Wellcome to the Coinmonkey! Please, activate your account.');
         });
         
-        return User::create([
+        $user = User::create([
             'name' => $data['name'],
             'confirm_token' => $token,
             'email' => $data['email'],
             'password' => bcrypt($data['password']),
         ]);
+
+        \App\Hooks::apply('userRegistered', ['user' => $user]);
     }
 }

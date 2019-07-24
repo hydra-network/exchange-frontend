@@ -20,8 +20,8 @@
                 secondary_asset_unc_balance: '{{ $secondary_asset->userUnconfirmedBalance() }}',
                 primary_asset_io_balance: '{{ $pair->userInOrdersPrimaryBalance() }}',
                 secondary_asset_io_balance: '{{ $pair->userInOrdersSecondaryBalance() }}',
-                primary_asset_volume: '{{ $pair->getSizes()['bid'] }}',
-                secondary_asset_volume: '{{ $pair->getSizes()['ask'] }}',
+                primary_asset_volume: '{{ $primary_asset->format($pair->getSizes()['bid']) }}',
+                secondary_asset_volume: '{{ $secondary_asset->format($pair->getSizes()['ask']) }}',
                 user_id: {{(auth()->user()) ? auth()->user()->id : 0 }},
                 chart_period: {{ ($period = session('chart_period')) ? (int) $period : 60 }}
             },

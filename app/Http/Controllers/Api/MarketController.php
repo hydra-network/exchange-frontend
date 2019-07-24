@@ -100,7 +100,6 @@ class MarketController extends Controller
     {
         $pair = PairModel::where('code', $code)->firstOrFail();
 
-        $volumes = $pair->getSizes();
         $sizes = $pair->getSizes();
         
         $lastPrice = Deal::where('pair_id', $pair->id)->where('pair_id', $pair->id)->OrderBy('id', 'DESC')->first();
@@ -135,10 +134,10 @@ class MarketController extends Controller
         }
 
         return response()->json([
-            'primary_asset_volume' => $pair->primary->format($volumes['bid']),
-            'secondary_asset_volume' => $pair->secondary->format($volumes['ask']),
+            'primary_asset_volume' => $pair->primary->format($sizes['bid']),
+            'secondary_asset_volume' => $pair->secondary->format($sizes['ask']),
             'daily_volume' =>  $pair->primary->format($volume24),
-            'bid_size' => $pair->secondary->format($sizes['bid']),
+            'bid_size' => $pair->primary->format($sizes['bid']),
             'ask_size' => $pair->secondary->format($sizes['ask']),
             'h24' => ($h24) ? $pair->primary->format($h24) : 0,
             'l24' => ($l24) ? $pair->primary->format($l24) : 0,

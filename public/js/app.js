@@ -2448,10 +2448,10 @@ var notifier = new __WEBPACK_IMPORTED_MODULE_2_awesome_notifications___default.a
             var that = this;
 
             __WEBPACK_IMPORTED_MODULE_1_axios___default.a.get(route("market.summary", { code: that.pair })).then(function (response) {
-                that.primary_asset_volume = parseFloat(response.data.primary_asset_volume);
-                that.secondary_asset_volume = parseFloat(response.data.secondary_asset_volume);
-                that.bid_size = parseFloat(response.data.bid_size);
-                that.ask_size = parseFloat(response.data.ask_size);
+                that.primary_asset_volume = response.data.primary_asset_volume;
+                that.secondary_asset_volume = response.data.secondary_asset_volume;
+                that.bid_size = response.data.bid_size;
+                that.ask_size = response.data.ask_size;
                 that.last_price = response.data.last_price;
                 that.daily_volume = response.data.daily_volume;
                 that.l24 = response.data.l24;
@@ -2587,9 +2587,12 @@ var notifier = new __WEBPACK_IMPORTED_MODULE_2_awesome_notifications___default.a
             this.order_quantity = orderQuantity;
         },
         updateVolumeChart: function updateVolumeChart() {
-            var sum = this.bid_size + this.ask_size;
-            this.bid_size_percent = this.bid_size * 100 / sum;
-            this.ask_size_percent = this.ask_size * 100 / sum;
+            var bid_size = parseFloat(this.bid_size);
+            var ask_size = parseFloat(this.ask_size);
+            var sum = bid_size + ask_size;
+
+            this.bid_size_percent = bid_size * 100 / sum;
+            this.ask_size_percent = ask_size * 100 / sum;
 
             if (this.bid_size_percent < 9) {
                 this.bid_size_percent = 9;
@@ -36009,7 +36012,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }
   }, [_c('tbody', {
     staticClass: "table-no-bordered"
-  }, [_c('tr', [_c('td', [_vm._v("High: " + _vm._s(_vm.h24))]), _vm._v(" "), _c('td', [_vm._v("Low: " + _vm._s(_vm.l24))]), _vm._v(" "), _c('td', [_c('strong', [_vm._v("Last: " + _vm._s(_vm.last_price))])]), _vm._v(" "), _c('td', [_vm._v("Volume: " + _vm._s(_vm.daily_volume))]), _vm._v(" "), _c('td', [_c('div', {
+  }, [_c('tr', [_c('td', [_vm._v("High: " + _vm._s(_vm.h24) + " " + _vm._s(_vm.primary_asset))]), _vm._v(" "), _c('td', [_vm._v("Low: " + _vm._s(_vm.l24) + " " + _vm._s(_vm.primary_asset))]), _vm._v(" "), _c('td', [_c('strong', [_vm._v("Last: " + _vm._s(_vm.last_price) + " " + _vm._s(_vm.primary_asset))])]), _vm._v(" "), _c('td', [_vm._v("Volume: " + _vm._s(_vm.daily_volume) + " " + _vm._s(_vm.primary_asset))]), _vm._v(" "), _c('td', [_c('div', {
     staticClass: "pull-right periods"
   }, [_c('small', _vm._l((_vm.timePeriods), function(item, key, index) {
     return _c('a', {

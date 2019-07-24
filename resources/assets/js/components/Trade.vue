@@ -6,10 +6,10 @@
                     <table title="24 hours"  width="100%">
                         <tbody class="table-no-bordered">
                             <tr>
-                                <td>High: {{h24}}</td>
-                                <td>Low: {{l24}}</td>
-                                <td><strong>Last: {{ last_price }}</strong></td>
-                                <td>Volume: {{ daily_volume }}</td>
+                                <td>High: {{h24}} {{ primary_asset }}</td>
+                                <td>Low: {{l24}} {{ primary_asset }}</td>
+                                <td><strong>Last: {{ last_price }} {{ primary_asset }}</strong></td>
+                                <td>Volume: {{ daily_volume }} {{ primary_asset }}</td>
                                 <td>
                                     <div class="pull-right periods">
                                         <small>
@@ -498,10 +498,10 @@
 
                 axios.get(route("market.summary", {code: that.pair}))
                     .then((response) => {
-                        that.primary_asset_volume = parseFloat(response.data.primary_asset_volume);
-                        that.secondary_asset_volume = parseFloat(response.data.secondary_asset_volume);
-                        that.bid_size = parseFloat(response.data.bid_size);
-                        that.ask_size = parseFloat(response.data.ask_size);
+                        that.primary_asset_volume = response.data.primary_asset_volume;
+                        that.secondary_asset_volume = response.data.secondary_asset_volume;
+                        that.bid_size = response.data.bid_size;
+                        that.ask_size = response.data.ask_size;
                         that.last_price = response.data.last_price;
                         that.daily_volume = response.data.daily_volume;
                         that.l24 = response.data.l24;
@@ -627,9 +627,12 @@
                 this.order_quantity = orderQuantity;
             },
             updateVolumeChart: function() {
-                var sum = this.bid_size + this.ask_size;
-                this.bid_size_percent = (this.bid_size*100)/sum;
-                this.ask_size_percent = (this.ask_size*100)/sum;
+                let bid_size = parseFloat(this.bid_size);
+                let ask_size = parseFloat(this.ask_size);
+                var sum = bid_size + ask_size;
+
+                this.bid_size_percent = bid_size*100/sum;
+                this.ask_size_percent = ask_size*100/sum;
 
                 if (this.bid_size_percent < 9) {
                     this.bid_size_percent = 9;

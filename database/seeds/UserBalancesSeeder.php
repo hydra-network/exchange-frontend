@@ -5,6 +5,7 @@ use App\Models\User;
 use App\Models\Balance;
 use App\Models\Asset;
 use App\Models\Pair;
+use Illuminate\Support\Facades\Artisan;
 
 class UserBalancesSeeder extends Seeder
 {
