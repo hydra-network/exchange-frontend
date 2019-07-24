@@ -42,9 +42,11 @@ class ApiTest extends TestCase
             'seller2' => [[Order::TYPE_SELL, 200, 5]],
         ];
 
+        $createdOrders = [];
+
         foreach ($orders as $userKey => $orders) {
             foreach ($orders as $order) {
-                $this->createOrder($this->{$userKey}, $order[0], $order[1], $order[2]);
+                $createdOrders[] = $this->createOrder($this->{$userKey}, $order[0], $order[1], $order[2]);
             }
         }
 
@@ -91,10 +93,20 @@ class ApiTest extends TestCase
 
         Artisan::call('order:matcher');
 
-        $this->checkBalance($this->buyer1, 99.2, 0.4, 19.2);
+        $this->checkBalance($this->buyer1, 80, 0.4, 19.2);
         $this->checkBalance($this->buyer2, 296.7, 101.1, 0);
-        $this->checkBalance($this->seller1, 4.1, 498.9, 0);
+        $this->checkBalance($this->seller1, 4.1, 498.5, 0);
         $this->checkBalance($this->seller2, 1, 300, 0, 200);
+
+        $this->post(
+            route('market.order.remove'),
+            ['id' => $createdOrders[0]['order_id']],
+            ['Authorization' => 'Bearer ' . $this->buyer1->getAuthToken()]
+        )
+            ->assertStatus(200)
+            ->getContent();
+
+        $this->checkBalance($this->buyer1, 80+19.2, 0.4, 0);
     }
 
     public function testUserBalances()

@@ -103,11 +103,8 @@ class Matching implements ShouldQueue
                         ]);
 
                         if ($dealModel->save()) {
-                            //$buyOrderModel->user->outcome($primaryAsset, $dealModel, $dealModel->cost*$primaryAsset->subunits);
                             $buyOrderModel->user->income($secondaryAsset, $dealModel, $dealModel->quantity);
-
                             $sellOrderModel->user->income($primaryAsset, $dealModel, $dealModel->cost);
-                            //$sellOrderModel->user->outcome($secondaryAsset, $dealModel, $sellerBalance->getSecondary()*$secondaryAsset->subunits);
 
                             $buyOrderModel->quantity_remain = $buyOrder->getQuantityRemain()*$secondaryAsset->subunits;
                             $buyOrderModel->status = $buyOrder->getStatus();
