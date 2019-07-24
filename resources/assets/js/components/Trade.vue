@@ -75,7 +75,7 @@
                             </table>
 
                             <div class="orders-pagination">
-                                <pagination :data="Object.assign({}, bid_list)" @pagination-change-page="getBuyOrders"></pagination>
+                                <pagination :limit="2" :data="Object.assign({}, bid_list)" @pagination-change-page="getBuyOrders"></pagination>
                             </div>
                         </div>
                     </div>
@@ -134,7 +134,7 @@
                             </table>
                         </div>
                         <div class="orders-pagination">
-                            <pagination :data="Object.assign({}, ask_list)" @pagination-change-page="getSellOrders"></pagination>
+                            <pagination :limit="2" :data="Object.assign({}, ask_list)" @pagination-change-page="getSellOrders"></pagination>
                         </div>
                     </div>
                 </div>
@@ -303,7 +303,7 @@
                             </tr>
                         </table>
 
-                        <pagination :data="Object.assign({}, deals_list)" @pagination-change-page="getDeals"></pagination>
+                        <pagination :limit="2" :data="Object.assign({}, deals_list)" @pagination-change-page="getDeals"></pagination>
                     </div>
                 </div>
             </div>
@@ -606,7 +606,7 @@
                 });
             },
             calculate: function() {
-                this.secondary_asset_quantity = Number.parseFloat(this.order_quantity * this.order_price).toFixed(8);
+                this.secondary_asset_quantity = Number.parseFloat(Number.parseFloat(this.order_quantity) * Number.parseFloat(this.order_price)).toFixed(8);
             },
             removeOrder: function(id) {
                 var that = this;
@@ -624,11 +624,13 @@
                         orderQuantity += parseFloat(this.quantity_remain);
                     }
                 });
-                this.order_quantity = orderQuantity;
+
+                this.order_quantity = Number.parseFloat(orderQuantity).toFixed(8);
+                this.calculate();
             },
             updateVolumeChart: function() {
-                let bid_size = parseFloat(this.bid_size);
-                let ask_size = parseFloat(this.ask_size);
+                let bid_size = Number.parseFloat(this.bid_size);
+                let ask_size = Number.parseFloat(this.ask_size);
                 var sum = bid_size + ask_size;
 
                 this.bid_size_percent = bid_size*100/sum;
