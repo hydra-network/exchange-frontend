@@ -38,7 +38,7 @@ class Matching implements ShouldQueue
     {
         echo "\n===\n";
 
-        try {
+        //try {
             $pairModel = PairModel::whereId($this->pair_id)->firstOrFail();
 
             $buyOrderModel = OrderModel::where('pair_id', $this->pair_id)->whereIn('status', [OrderModel::STATUS_NEW, OrderModel::STATUS_ACTIVE, OrderModel::STATUS_PARTIAL])->whereType(OrderModel::TYPE_BUY)->orderBy('price', 'DESC')->first();
@@ -103,9 +103,6 @@ class Matching implements ShouldQueue
                         ]);
 
                         if ($dealModel->save()) {
-                            $buyOrderModel->user->income($secondaryAsset, $dealModel, $dealModel->quantity);
-                            $sellOrderModel->user->income($primaryAsset, $dealModel, $dealModel->cost);
-
                             $buyOrderModel->quantity_remain = $buyOrder->getQuantityRemain()*$secondaryAsset->subunits;
                             $buyOrderModel->status = $buyOrder->getStatus();
                             $buyOrderModel->cost_remain = $buyOrder->getCostRemain()*$primaryAsset->subunits;
@@ -115,6 +112,9 @@ class Matching implements ShouldQueue
                             $sellOrderModel->status = $sellOrder->getStatus();
                             $sellOrderModel->cost_remain = $sellOrder->getCostRemain()*$primaryAsset->subunits;
                             $sellOrderModel->save();
+
+                            $buyOrderModel->user->income($secondaryAsset, $dealModel, $dealModel->quantity);
+                            $sellOrderModel->user->income($primaryAsset, $dealModel, $dealModel->cost);
                         }
                     });
                 } else {
@@ -126,9 +126,9 @@ class Matching implements ShouldQueue
             echo "\n____________________\n";
 
             return true;
-        } catch (\Throwable $e) {
-            echo "[Error]: " . $e->getMessage() . "\n";
-            return false;
-        }
+        //} catch (\Throwable $e) {
+        //    echo "[Error]: " . $e->getMessage() . "\n";
+        //    return false;
+        //}
     }
 }
