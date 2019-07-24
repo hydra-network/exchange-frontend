@@ -92,7 +92,7 @@
                             </label>
                             <label style="width: 100%;">
                                 {{ primary_asset }} cost
-                                <input type="text"  :title="'Balance: ' + secondary_asset_balance" v-model="secondary_asset_quantity" disabled class="form-control" />
+                                <input type="text"  :title="'Balance: ' + secondary_asset_balance" v-model="primary_asset_cost" disabled class="form-control" />
                             </label>
                             <div style="clear: both"></div>
 
@@ -362,7 +362,7 @@
                 my_sell_orders_list: [],
                 my_buy_orders_list: [],
                 deals_list: {data: []},
-                secondary_asset_quantity: 0,
+                primary_asset_cost: 0,
                 daily_volume: null,
                 h24: null,
                 l24: null,
@@ -481,7 +481,7 @@
                     });
             },
             reset: function () {
-                this.secondary_asset_quantity = 0;
+                this.primary_asset_cost = 0;
                 this.order_quantity = 0;
 
                 if (this.secondary_asset_data.min_trade_amount) {
@@ -606,7 +606,7 @@
                 });
             },
             calculate: function() {
-                this.secondary_asset_quantity = Number.parseFloat(Number.parseFloat(this.order_quantity) * Number.parseFloat(this.order_price)).toFixed(8);
+                this.primary_asset_cost = Number.parseFloat(Number.parseFloat(this.order_quantity) * Number.parseFloat(this.order_price)).toFixed(this.primary_asset_data.round);
             },
             removeOrder: function(id) {
                 var that = this;
@@ -625,7 +625,7 @@
                     }
                 });
 
-                this.order_quantity = Number.parseFloat(orderQuantity).toFixed(8);
+                this.order_quantity = Number.parseFloat(orderQuantity).toFixed(this.secondary_asset_data.round);
                 this.calculate();
             },
             updateVolumeChart: function() {
@@ -685,12 +685,12 @@
 
             setInterval(function () {
                 this.updateDashboard();
-            }.bind(this), 10000);
+            }.bind(this), 20000);
 
             setInterval(function () {
                 this.updateBalances();
                 this.updateSummary();
-            }.bind(this), 20000);
+            }.bind(this), 70000);
         }
     }
 </script>
