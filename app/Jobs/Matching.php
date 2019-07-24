@@ -56,27 +56,27 @@ class Matching implements ShouldQueue
                 $secondaryAsset = $pairModel->secondary;
 
                 $buyerBalance = new BuyerBalance(
-                        ($buyOrderModel->user->getBalance($primaryAsset) + $buyOrderModel->cost_remain),
-                        $buyOrderModel->user->getBalance($secondaryAsset)
+                    ($primaryAsset->format2($buyOrderModel->user->getBalance($primaryAsset)) + $primaryAsset->format2($buyOrderModel->cost_remain)),
+                    $secondaryAsset->format2($buyOrderModel->user->getBalance($secondaryAsset))
                 );
 
                 $sellerBalance = new SellerBalance(
-                    $sellOrderModel->user->getBalance($primaryAsset),
-                    ($sellOrderModel->user->getBalance($secondaryAsset) + $sellOrderModel->quantity_remain)
+                    $primaryAsset->format2($sellOrderModel->user->getBalance($primaryAsset)),
+                    ($secondaryAsset->format2($sellOrderModel->user->getBalance($secondaryAsset)) + $secondaryAsset->format2($sellOrderModel->quantity_remain))
                 );
 
                 $buyOrder = new BuyOrder(
                     $pair,
-                    $buyOrderModel->quantity_remain,
-                    $buyOrderModel->price/$primaryAsset->subunits,
+                    $secondaryAsset->format2($buyOrderModel->quantity_remain),
+                    $primaryAsset->format2($buyOrderModel->price),
                     $buyerBalance,
                     $buyOrderModel->id
                 );
 
                 $sellOrder = new SellOrder(
                     $pair,
-                    $sellOrderModel->quantity_remain,
-                    $sellOrderModel->price/$primaryAsset->subunits,
+                    $secondaryAsset->format2($sellOrderModel->quantity_remain),
+                    $primaryAsset->format2($sellOrderModel->price),
                     $sellerBalance,
                     $sellOrderModel->id
                 );
@@ -96,27 +96,27 @@ class Matching implements ShouldQueue
                             'seller_user_id' => $sellOrderModel->user->id,
                             'ask_id' => $buyOrderModel->id,
                             'bid_id' => $sellOrderModel->id,
-                            'quantity' => $deal->getQuantity(),
+                            'quantity' => $deal->getQuantity()*$secondaryAsset->subunits,
                             'price' => ($deal->getPrice() * $primaryAsset->subunits),
-                            'cost' => $deal->getQuantity() * $deal->getPrice(),
+                            'cost' => ($deal->getQuantity() * $deal->getPrice()) * $primaryAsset->subunits,
                             'type' => $deal->getType()
                         ]);
 
                         if ($dealModel->save()) {
-                            $buyOrderModel->user->transaction($primaryAsset, $dealModel, $buyerBalance->getPrimary()*$primaryAsset->units);
-                            $buyOrderModel->user->transaction($secondaryAsset, $dealModel, $buyerBalance->getSecondary()*$secondaryAsset->units);
+                            //$buyOrderModel->user->outcome($primaryAsset, $dealModel, $dealModel->cost*$primaryAsset->subunits);
+                            $buyOrderModel->user->income($secondaryAsset, $dealModel, $dealModel->quantity);
 
-                            $sellOrderModel->user->transaction($primaryAsset, $dealModel, $sellerBalance->getPrimary()*$primaryAsset->units);
-                            $sellOrderModel->user->transaction($secondaryAsset, $dealModel, $sellerBalance->getSecondary()*$secondaryAsset->units);
+                            $sellOrderModel->user->income($primaryAsset, $dealModel, $dealModel->cost);
+                            //$sellOrderModel->user->outcome($secondaryAsset, $dealModel, $sellerBalance->getSecondary()*$secondaryAsset->subunits);
 
-                            $buyOrderModel->quantity_remain = $buyOrder->getQuantityRemain();
+                            $buyOrderModel->quantity_remain = $buyOrder->getQuantityRemain()*$secondaryAsset->subunits;
                             $buyOrderModel->status = $buyOrder->getStatus();
-                            $buyOrderModel->cost_remain = $buyOrder->getCostRemain();
+                            $buyOrderModel->cost_remain = $buyOrder->getCostRemain()*$primaryAsset->subunits;
                             $buyOrderModel->save();
 
-                            $sellOrderModel->quantity_remain = $sellOrder->getQuantityRemain();
+                            $sellOrderModel->quantity_remain = $sellOrder->getQuantityRemain()*$secondaryAsset->subunits;
                             $sellOrderModel->status = $sellOrder->getStatus();
-                            $sellOrderModel->cost_remain = $sellOrder->getCostRemain();
+                            $sellOrderModel->cost_remain = $sellOrder->getCostRemain()*$primaryAsset->subunits;
                             $sellOrderModel->save();
                         }
                     });

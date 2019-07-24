@@ -75,4 +75,12 @@ class Asset extends Model
 
         return rtrim(rtrim(number_format(round($quantity, $this->round), $this->round, ".", " "), '0'), '.');
     }
+
+    public function format2($quantity)
+    {
+        $quantity = (int) $quantity;
+
+        return $quantity/$this->subunits;
+        return round($quantity/$this->subunits, 8, PHP_ROUND_HALF_DOWN);
+    }
 }

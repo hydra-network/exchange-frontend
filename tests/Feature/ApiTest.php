@@ -63,11 +63,9 @@ class ApiTest extends TestCase
 
         //second tick
         Artisan::call('order:matcher');
-        sleep(1);
 
         //last tick
         Artisan::call('order:matcher');
-        sleep(1);
 
         $buyOrders = $this->getOrders(Order::TYPE_BUY);
         $this->assertEquals(count($buyOrders), 1);
@@ -90,6 +88,13 @@ class ApiTest extends TestCase
         $this->assertEquals($deals[0]['quantity'], 0.4);
         $this->assertEquals($deals[0]['cost'], 0.8);
         $this->assertEquals($deals[0]['type'], Deal::TYPE_SELLER_TAKER);
+
+        Artisan::call('order:matcher');
+
+        $this->checkBalance($this->buyer1, 99.2, 0.4, 19.2);
+        $this->checkBalance($this->buyer2, 296.7, 101.1, 0);
+        $this->checkBalance($this->seller1, 4.1, 498.9, 0);
+        $this->checkBalance($this->seller2, 1, 300, 0, 200);
     }
 
     public function testUserBalances()
