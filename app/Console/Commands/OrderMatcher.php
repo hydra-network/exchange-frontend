@@ -13,7 +13,7 @@ class OrderMatcher extends Command
      *
      * @var string
      */
-    protected $signature = 'order:matcher';
+    protected $signature = 'order:matcher {dealTime}';
 
     /**
      * The console command description.
@@ -43,7 +43,7 @@ class OrderMatcher extends Command
 
           foreach ($pairs as $pair) {
               echo "Pair {$pair->id} \n";
-              Matching::dispatchNow($pair->id);
+              Matching::dispatchNow($pair->id, $this->argument('dealTime'));
           }
     }
 }

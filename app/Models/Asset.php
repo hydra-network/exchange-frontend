@@ -78,6 +78,7 @@ class Asset extends Model
 
     public function format2($quantity)
     {
+        return $quantity;
         $quantity = (int) $quantity;
 
         return $quantity/$this->subunits;

@@ -16,6 +16,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
+        set_time_limit(0);
+
         Asset::create([
             'id' => 1,
             'name' => 'DemoBTC',
@@ -74,22 +76,49 @@ class DatabaseSeeder extends Seeder
             'password' => bcrypt(123123)
         ]);
 
-        Balance::create([
-            'type' => 'in',
-            'asset_id' => 1,
-            'user_id' => 1,
-            'quantity' => 1000*100000000,
-            'balance' => 1000*100000000,
+        User::create([
+            'id' => 2,
+            'name' => 'DemoUser2',
+            'email' => 'demouser2@dexdev.ru',
+            //'password' => bcrypt('p' . rand(0, 9999) . time() . rand(0, 999999))
+            'password' => bcrypt(123123)
         ]);
 
-        Balance::create([
-            'type' => 'in',
-            'asset_id' => 2,
-            'user_id' => 1,
-            'quantity' => 700000*100,
-            'balance' => 700000*100,
+        User::create([
+            'id' => 3,
+            'name' => 'DemoUser3',
+            'email' => 'demouser3@dexdev.ru',
+            //'password' => bcrypt('p' . rand(0, 9999) . time() . rand(0, 999999))
+            'password' => bcrypt(123123)
         ]);
 
+        User::create([
+            'id' => 4,
+            'name' => 'DemoUser4',
+            'email' => 'demouser4@dexdev.ru',
+            //'password' => bcrypt('p' . rand(0, 9999) . time() . rand(0, 999999))
+            'password' => bcrypt(123123)
+        ]);
+
+        for ($i = 1; $i <= 4; $i++) {
+            Balance::create([
+                'type' => 'in',
+                'asset_id' => 1,
+                'user_id' => $i,
+                'quantity' => 1000*100000000,
+                'balance' => 1000*100000000,
+            ]);
+
+            Balance::create([
+                'type' => 'in',
+                'asset_id' => 2,
+                'user_id' => $i,
+                'quantity' => 700000*100,
+                'balance' => 700000*100,
+            ]);
+        }
+
+        $time = time()-(1000*60);
         for ($i = 1; $i <= 1000; $i++) {
             if (rand(1, 2) == 2) { //sell order
                 $type = Order::TYPE_SELL;
@@ -103,7 +132,7 @@ class DatabaseSeeder extends Seeder
 
             Order::create([
                 'pair_id' => 1,
-                'user_id' => 1,
+                'user_id' => rand(1, 4),
                 'type' => $type,
                 'status' => Order::STATUS_ACTIVE,
                 'quantity' => $quantity*100000000,
@@ -111,9 +140,12 @@ class DatabaseSeeder extends Seeder
                 'price' => $price*100,
                 'cost' => ($quantity*$price)*100,
                 'cost_remain' => ($quantity*$price)*100,
+                'created_at' => $time
             ]);
 
-            Artisan::call('order:matcher');
+            Artisan::call('order:matcher', ['dealTime' => $time]);
+
+            $time = $time+60;
         }
     }
 }

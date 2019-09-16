@@ -18,15 +18,17 @@ class Matching implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     private $pair_id = null;
-    
+    private $deal_time = null;
+
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($pair_id)
+    public function __construct($pair_id, $deal_time)
     {
         $this->pair_id = $pair_id;
+        $this->deal_time = $deal_time;
     }
 
     /**
@@ -99,7 +101,8 @@ class Matching implements ShouldQueue
                             'quantity' => $deal->getQuantity()*$secondaryAsset->subunits,
                             'price' => ($deal->getPrice() * $primaryAsset->subunits),
                             'cost' => ($deal->getQuantity() * $deal->getPrice()) * $primaryAsset->subunits,
-                            'type' => $deal->getType()
+                            'type' => $deal->getType(),
+                            'created_at' => ($this->deal_time) ? date('Y-m-d H:i:s', $this->deal_time) : date('Y-m-d H:i:s')
                         ]);
 
                         if ($dealModel->save()) {

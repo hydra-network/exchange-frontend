@@ -50,7 +50,7 @@ php artisan jwt:secret
 Demo data:
 
 ```
-php artisan db:seed --class=UserBalancesSeeder
+php artisan db:seed --class=DatabaseSeeder
 ```
 
 Launching of queue consumer:

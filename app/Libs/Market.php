@@ -137,20 +137,20 @@ class Market
         for ($i = 1; $i <= $limit; $i++) {
             $time = $from + ($i*$period*60);
 
-            if (!$open = Deal::where('pair_id', $pair->id)->whereBetween('created_at', [date('Y-m-d H:i:s', $lastI), date('Y-m-d H:i:s', $time)])->OrderBy('id', 'ASC')->first()) {
-                $open = Deal::where('pair_id', $pair->id)->where('created_at', '<', date('Y-m-d H:i:s', $time))->OrderBy('id', 'DESC')->first();
+            if (!$open = Deal::where('pair_id', $pair->id)->whereBetween('created_at1', [date('Y-m-d H:i:s', $lastI), date('Y-m-d H:i:s', $time)])->orderBy('id', 'ASC')->first()) {
+                $open = Deal::where('pair_id', $pair->id)->where('created_at', '<', date('Y-m-d H:i:s', $time))->orderBy('id', 'DESC')->first();
             }
 
-            if (!$hight = Deal::where('pair_id', $pair->id)->whereBetween('created_at', [date('Y-m-d H:i:s', $lastI), date('Y-m-d H:i:s', $time)])->OrderBy('price', 'DESC')->first()) {
-                $hight = Deal::where('pair_id', $pair->id)->where('created_at', '<', date('Y-m-d H:i:s', $time))->OrderBy('id', 'DESC')->first();
+            if (!$hight = Deal::where('pair_id', $pair->id)->whereBetween('created_at', [date('Y-m-d H:i:s', $lastI), date('Y-m-d H:i:s', $time)])->orderBy('price', 'DESC')->first()) {
+                $hight = Deal::where('pair_id', $pair->id)->where('created_at', '<', date('Y-m-d H:i:s', $time))->orderBy('id', 'DESC')->first();
             }
 
-            if (!$low = Deal::where('pair_id', $pair->id)->whereBetween('created_at', [date('Y-m-d H:i:s', $lastI), date('Y-m-d H:i:s', $time)])->OrderBy('price', 'ASC')->first()) {
-                $low = Deal::where('pair_id', $pair->id)->where('created_at', '<', date('Y-m-d H:i:s', $time))->OrderBy('id', 'DESC')->first();
+            if (!$low = Deal::where('pair_id', $pair->id)->whereBetween('created_at', [date('Y-m-d H:i:s', $lastI), date('Y-m-d H:i:s', $time)])->orderBy('price', 'ASC')->first()) {
+                $low = Deal::where('pair_id', $pair->id)->where('created_at', '<', date('Y-m-d H:i:s', $time))->orderBy('id', 'DESC')->first();
             }
 
-            if (!$close = Deal::where('pair_id', $pair->id)->whereBetween('created_at', [date('Y-m-d H:i:s', $lastI), date('Y-m-d H:i:s', $time)])->OrderBy('id', 'DESC')->first()) {
-                $close = Deal::where('pair_id', $pair->id)->where('created_at', '<', date('Y-m-d H:i:s', $time))->OrderBy('id', 'DESC')->first();
+            if (!$close = Deal::where('pair_id', $pair->id)->whereBetween('created_at', [date('Y-m-d H:i:s', $lastI), date('Y-m-d H:i:s', $time)])->orderBy('id', 'DESC')->first()) {
+                $close = Deal::where('pair_id', $pair->id)->where('created_at', '<', date('Y-m-d H:i:s', $time))->orderBy('id', 'DESC')->first();
             }
 
             $volume = Deal::where('pair_id', $pair->id)->whereBetween('created_at', [date('Y-m-d H:i:s', $lastI), date('Y-m-d H:i:s', $time)])->sum('quantity');
@@ -183,7 +183,7 @@ class Market
                     $minPrice = $low->price;
                 }
 
-                $ticks['ohlc'][] = [$pair->primary->format($o), $pair->primary->format($h), $pair->primary->format($l), $pair->primary->format($c)];
+                $ticks['ohlc'][] = [$pair->primary->format2($o), $pair->primary->format2($h), $pair->primary->format2($l), $pair->primary->format2($c)];
                 $ticks['volume'][] = $volume;
                 $ticks['times'][] = date('H:i', $time);
             }

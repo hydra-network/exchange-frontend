@@ -7,7 +7,7 @@ use App\Workers\BalanceShapeShift;
 
 class Order extends Model
 {
-    protected $fillable = ['pair_id', 'user_id', 'type', 'owner_type', 'status', 'quantity', 'quantity_remain', 'cost', 'cost_remain', 'price'];
+    protected $fillable = ['pair_id', 'user_id', 'type', 'owner_type', 'status', 'quantity', 'quantity_remain', 'cost', 'cost_remain', 'price', 'created_at'];
     protected $hidden = ['user_id'];
 
     public $timestamps = true;
