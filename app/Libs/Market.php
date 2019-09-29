@@ -123,10 +123,12 @@ class Market
 
     public function getTicks($period, $limit)
     {
+        $period = $period*60;
+
         $pair = $this->pair;
 
         $from = time()-($period*$limit);
-
+//die(date('d.m.Y H:i:s', $from));
         $ticks = [
             'ohlc' => [],
             'volume' => [],
@@ -137,8 +139,11 @@ class Market
         for ($i = 1; $i <= $limit; $i++) {
             $time = $from + ($i*$period*60);
 
-            if (!$open = Deal::where('pair_id', $pair->id)->whereBetween('created_at1', [date('Y-m-d H:i:s', $lastI), date('Y-m-d H:i:s', $time)])->orderBy('id', 'ASC')->first()) {
+            //echo date('d.m.Y H:i:s', $lastI) . ' - ' . date('d.m.Y H:i:s', $time) . "<br />";
+            if (!$open = Deal::where('pair_id', $pair->id)->whereBetween('created_at', [date('Y-m-d H:i:s', $lastI), date('Y-m-d H:i:s', $time)])->orderBy('id', 'ASC')->first()) {
                 $open = Deal::where('pair_id', $pair->id)->where('created_at', '<', date('Y-m-d H:i:s', $time))->orderBy('id', 'DESC')->first();
+            } else {
+                //var_dump($open); die;
             }
 
             if (!$hight = Deal::where('pair_id', $pair->id)->whereBetween('created_at', [date('Y-m-d H:i:s', $lastI), date('Y-m-d H:i:s', $time)])->orderBy('price', 'DESC')->first()) {
@@ -184,7 +189,7 @@ class Market
                 }
 
                 $ticks['ohlc'][] = [$pair->primary->format2($o), $pair->primary->format2($h), $pair->primary->format2($l), $pair->primary->format2($c)];
-                $ticks['volume'][] = $volume;
+                $ticks['volume'][] = $pair->secondary->format2($volume);
                 $ticks['times'][] = date('H:i', $time);
             }
 

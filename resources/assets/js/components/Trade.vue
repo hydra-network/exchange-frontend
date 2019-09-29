@@ -444,7 +444,7 @@
                             "scale-y": { //for Stock Chart
                                 "offset-start": "35%", //to adjust scale offsets.
                                 "format": "%v",
-                                "values": "0:" + (parseInt(response.data.max_price)+(parseInt(response.data.max_price)*0.5)) + ":" + (parseInt(response.data.max_price)+(parseInt(response.data.max_price)*0.5)),
+                                //"values": "0:" + (parseInt(response.data.max_price)+(parseInt(response.data.max_price)*0.5)) + ":" + (parseInt(response.data.max_price)+(parseInt(response.data.max_price)*0.5)),
                                 "label": {
                                     "text": "Prices"
                                 }
@@ -453,7 +453,7 @@
                                 "placement": "default", //to move scale to default (left) side.
                                 "blended": true, //to bind the scale to "scale-y".
                                 "offset-end": "75%", //to adjust scale offsets.
-                                "values": "0:" + response.data.max_volume + ":" + response.data.max_volume,
+                                //"values": "0:" + response.data.max_volume + ":" + response.data.max_volume,
                                 "format": "%v",
                                 "label": {
                                     "text": "Volume"
@@ -474,6 +474,8 @@
                             ]
                         };
 
+                        $('#chart').html("");
+                        console.log(myConfig);
                         zingchart.render({
                             id : 'chart',
                             data : myConfig,
@@ -585,7 +587,7 @@
                 let quantity = that.order_quantity;
                 let price = that.order_price;
 
-                axios.post(route("market.order.add"), {pair: this.pair, type: type, quantity: quantity, price: price})
+                axios.post(route("market.order.add"), {pair: this.pair, type: type, quantity: quantity.replace(' ', ''), price: price.replace(' ', '')})
                     .then((response) => {
                     that.reset();
                     that.updateDashboard();

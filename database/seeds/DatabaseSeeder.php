@@ -18,6 +18,9 @@ class DatabaseSeeder extends Seeder
     {
         set_time_limit(0);
 
+        $btcSubunits = 100000000;
+        $usdSubunits = 100;
+
         Asset::create([
             'id' => 1,
             'name' => 'DemoBTC',
@@ -29,10 +32,10 @@ class DatabaseSeeder extends Seeder
             'address_example' => '',
             'min_confirmations' => 1,
             'min_withdrawal_amount' => 100,
-            'min_trade_amount' => 1,
+            'min_trade_amount' => 0.0001,
             'withdrawal_fees' => 1,
             'exchange_fees' => 0,
-            'subunits' => 100000000,
+            'subunits' => $btcSubunits,
             'round' => 8,
         ]);
 
@@ -47,10 +50,10 @@ class DatabaseSeeder extends Seeder
             'address_example' => '',
             'min_confirmations' => 1,
             'min_withdrawal_amount' => 100,
-            'min_trade_amount' => 1,
+            'min_trade_amount' => 0.0001,
             'withdrawal_fees' => 1,
             'exchange_fees' => 0,
-            'subunits' => 100,
+            'subunits' => $usdSubunits,
             'round' => 2,
         ]);
 
@@ -60,7 +63,7 @@ class DatabaseSeeder extends Seeder
             'status' => Pair::STATUS_ACTIVE,
             'primary_asset_id' => 2,
             'secondary_asset_id' => 1,
-            'min_trade_amount' => 1,
+            'min_trade_amount' => 0.0001,
             'limit_from_one_person' => null,
             'max_price' => null,
             'min_price' => null,
@@ -105,16 +108,16 @@ class DatabaseSeeder extends Seeder
                 'type' => 'in',
                 'asset_id' => 1,
                 'user_id' => $i,
-                'quantity' => 1000*100000000,
-                'balance' => 1000*100000000,
+                'quantity' => 1000*$btcSubunits,
+                'balance' => 1000*$btcSubunits,
             ]);
 
             Balance::create([
                 'type' => 'in',
                 'asset_id' => 2,
                 'user_id' => $i,
-                'quantity' => 700000*100,
-                'balance' => 700000*100,
+                'quantity' => 700000*$usdSubunits,
+                'balance' => 700000*$usdSubunits,
             ]);
         }
 
@@ -122,24 +125,29 @@ class DatabaseSeeder extends Seeder
         for ($i = 1; $i <= 1000; $i++) {
             if (rand(1, 2) == 2) { //sell order
                 $type = Order::TYPE_SELL;
-                $price = rand(101000, 500000)/100;
+                $price = rand(10100, 12999);
             } else { //buy order
-                $price = rand(50000, 128000)/100;
+                if (rand(1, 2) == 1) {
+                    $price = rand(10000, 10500);
+                } else {
+                    $price = rand(1000, 10500);
+                }
+
                 $type = Order::TYPE_BUY;
             }
 
-            $quantity = rand(1, 2000000)/100000000;
+            $quantity = rand(1, 20000000)/$btcSubunits;
 
             Order::create([
                 'pair_id' => 1,
                 'user_id' => rand(1, 4),
                 'type' => $type,
                 'status' => Order::STATUS_ACTIVE,
-                'quantity' => $quantity*100000000,
-                'quantity_remain' => $quantity*100000000,
+                'quantity' => $quantity*$btcSubunits,
+                'quantity_remain' => $quantity*$btcSubunits,
                 'price' => $price*100,
-                'cost' => ($quantity*$price)*100,
-                'cost_remain' => ($quantity*$price)*100,
+                'cost' => ($quantity*$price)*$usdSubunits,
+                'cost_remain' => ($quantity*$price)*$usdSubunits,
                 'created_at' => $time
             ]);
 

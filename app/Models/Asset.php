@@ -78,10 +78,6 @@ class Asset extends Model
 
     public function format2($quantity)
     {
-        return $quantity;
-        $quantity = (int) $quantity;
-
-        return $quantity/$this->subunits;
         return round($quantity/$this->subunits, 8, PHP_ROUND_HALF_DOWN);
     }
 }

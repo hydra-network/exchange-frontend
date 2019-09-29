@@ -13,7 +13,7 @@ class OrderMatcher extends Command
      *
      * @var string
      */
-    protected $signature = 'order:matcher {dealTime}';
+    protected $signature = 'order:matcher {dealTime?}';
 
     /**
      * The console command description.

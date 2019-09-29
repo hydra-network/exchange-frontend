@@ -25,7 +25,7 @@ class Matching implements ShouldQueue
      *
      * @return void
      */
-    public function __construct($pair_id, $deal_time)
+    public function __construct($pair_id, $deal_time = null)
     {
         $this->pair_id = $pair_id;
         $this->deal_time = $deal_time;
@@ -40,7 +40,7 @@ class Matching implements ShouldQueue
     {
         echo "\n===\n";
 
-        //try {
+        try {
             $pairModel = PairModel::whereId($this->pair_id)->firstOrFail();
 
             $buyOrderModel = OrderModel::where('pair_id', $this->pair_id)->whereIn('status', [OrderModel::STATUS_NEW, OrderModel::STATUS_ACTIVE, OrderModel::STATUS_PARTIAL])->whereType(OrderModel::TYPE_BUY)->orderBy('price', 'DESC')->first();
@@ -129,9 +129,10 @@ class Matching implements ShouldQueue
             echo "\n____________________\n";
 
             return true;
-        //} catch (\Throwable $e) {
-        //    echo "[Error]: " . $e->getMessage() . "\n";
-        //    return false;
-        //}
+        } catch (\Throwable $e) {
+            echo "[Error]: " . $e->getMessage() . "\n";
+
+            return false;
+        }
     }
 }
