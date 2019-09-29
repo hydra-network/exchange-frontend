@@ -2295,6 +2295,7 @@ var notifier = new __WEBPACK_IMPORTED_MODULE_2_awesome_notifications___default.a
                 720: "12h",
                 1440: "1d"
             },
+            loaded: false,
             marketName: '...',
             chart_period: null,
             pair: null,
@@ -2342,6 +2343,7 @@ var notifier = new __WEBPACK_IMPORTED_MODULE_2_awesome_notifications___default.a
     watch: {
         chart_period: function chart_period(new_val) {
             localStorage.setItem('chart_period', new_val);
+
             this.updateChart();
         },
         deals_show_my_history: function deals_show_my_history() {
@@ -2377,6 +2379,12 @@ var notifier = new __WEBPACK_IMPORTED_MODULE_2_awesome_notifications___default.a
                     dateFormat = "%d.%m.%Y<br>%H:%i:%s";
                 }
 
+                var max_price = parseFloat(response.data.max_price);
+                var min_price = parseFloat(response.data.min_price);
+
+                var min_chart_price = min_price - min_price * 0.2;
+                var max_chart_price = max_price + max_price * 0.1;
+
                 var myConfig = {
                     "type": "mixed",
                     "title": {
@@ -2385,8 +2393,8 @@ var notifier = new __WEBPACK_IMPORTED_MODULE_2_awesome_notifications___default.a
                     "utc": true,
                     "timezone": 0,
                     "scale-x": {
-                        "min-value": response.data.time_start * 1000,
-                        "step": that.chart_period + "minute",
+                        "min-value": parseInt(response.data.time_start) * 1000,
+                        "step": parseInt(that.chart_period) * 60 * 1000,
                         "transform": {
                             "type": "date",
                             "all": dateFormat
@@ -2398,7 +2406,8 @@ var notifier = new __WEBPACK_IMPORTED_MODULE_2_awesome_notifications___default.a
                     "scale-y": { //for Stock Chart
                         "offset-start": "35%", //to adjust scale offsets.
                         "format": "%v",
-                        //"values": "0:" + (parseInt(response.data.max_price)+(parseInt(response.data.max_price)*0.5)) + ":" + (parseInt(response.data.max_price)+(parseInt(response.data.max_price)*0.5)),
+                        //"values": "12000:5000",
+                        "values": max_chart_price + ':' + min_chart_price,
                         "label": {
                             "text": "Prices"
                         }
@@ -2642,17 +2651,19 @@ var notifier = new __WEBPACK_IMPORTED_MODULE_2_awesome_notifications___default.a
         this.reset();
         this.updateSummary();
         this.updateDashboard();
-        this.updateChart();
         this.updateBalances();
 
         setInterval(function () {
             this.updateDashboard();
+            this.updateChart();
         }.bind(this), 20000);
 
         setInterval(function () {
             this.updateBalances();
             this.updateSummary();
         }.bind(this), 70000);
+
+        this.loaded = true;
     }
 });
 

@@ -337,6 +337,7 @@
                     720: "12h",
                     1440: "1d"
                 },
+                loaded: false,
                 marketName: '...',
                 chart_period: null,
                 pair: null,
@@ -385,6 +386,7 @@
         watch: {
             chart_period: function(new_val) {
                 localStorage.setItem('chart_period', new_val);
+
                 this.updateChart();
             },
             deals_show_my_history: function() {
@@ -423,7 +425,13 @@
                             dateFormat = "%d.%m.%Y<br>%H:%i:%s";
                         }
 
-                        var myConfig = {
+                        let max_price = parseFloat(response.data.max_price);
+                        let min_price = parseFloat(response.data.min_price);
+
+                        let min_chart_price = ((min_price)-(min_price*0.2));
+                        let max_chart_price = ((max_price)+(max_price*0.1));
+
+                        let myConfig = {
                             "type": "mixed",
                             "title": {
                                 "text": ""
@@ -431,8 +439,8 @@
                             "utc": true,
                             "timezone": 0,
                             "scale-x": {
-                                "min-value": response.data.time_start * 1000,
-                                "step": that.chart_period + "minute",
+                                "min-value": parseInt(response.data.time_start) * 1000,
+                                "step": parseInt(that.chart_period) * 60 * 1000,
                                 "transform": {
                                     "type":"date",
                                     "all":dateFormat
@@ -444,7 +452,8 @@
                             "scale-y": { //for Stock Chart
                                 "offset-start": "35%", //to adjust scale offsets.
                                 "format": "%v",
-                                //"values": "0:" + (parseInt(response.data.max_price)+(parseInt(response.data.max_price)*0.5)) + ":" + (parseInt(response.data.max_price)+(parseInt(response.data.max_price)*0.5)),
+                                //"values": "12000:5000",
+                                "values": max_chart_price + ':' + min_chart_price,
                                 "label": {
                                     "text": "Prices"
                                 }
@@ -475,7 +484,7 @@
                         };
 
                         $('#chart').html("");
-                        console.log(myConfig);
+console.log(myConfig);
                         zingchart.render({
                             id : 'chart',
                             data : myConfig,
@@ -682,17 +691,19 @@
             this.reset();
             this.updateSummary();
             this.updateDashboard();
-            this.updateChart();
             this.updateBalances();
 
             setInterval(function () {
                 this.updateDashboard();
+                this.updateChart();
             }.bind(this), 20000);
 
             setInterval(function () {
                 this.updateBalances();
                 this.updateSummary();
             }.bind(this), 70000);
+
+            this.loaded = true;
         }
     }
 </script>

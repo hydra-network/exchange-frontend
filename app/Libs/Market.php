@@ -123,12 +123,10 @@ class Market
 
     public function getTicks($period, $limit)
     {
-        $period = $period*60;
-
         $pair = $this->pair;
 
-        $from = time()-($period*$limit);
-//die(date('d.m.Y H:i:s', $from));
+        $from = time()-($period*$limit*60);
+
         $ticks = [
             'ohlc' => [],
             'volume' => [],
@@ -137,13 +135,10 @@ class Market
 
         $lastI = $from;
         for ($i = 1; $i <= $limit; $i++) {
-            $time = $from + ($i*$period*60);
+            $time = $lastI + $period*60;
 
-            //echo date('d.m.Y H:i:s', $lastI) . ' - ' . date('d.m.Y H:i:s', $time) . "<br />";
             if (!$open = Deal::where('pair_id', $pair->id)->whereBetween('created_at', [date('Y-m-d H:i:s', $lastI), date('Y-m-d H:i:s', $time)])->orderBy('id', 'ASC')->first()) {
                 $open = Deal::where('pair_id', $pair->id)->where('created_at', '<', date('Y-m-d H:i:s', $time))->orderBy('id', 'DESC')->first();
-            } else {
-                //var_dump($open); die;
             }
 
             if (!$hight = Deal::where('pair_id', $pair->id)->whereBetween('created_at', [date('Y-m-d H:i:s', $lastI), date('Y-m-d H:i:s', $time)])->orderBy('price', 'DESC')->first()) {
@@ -191,22 +186,24 @@ class Market
                 $ticks['ohlc'][] = [$pair->primary->format2($o), $pair->primary->format2($h), $pair->primary->format2($l), $pair->primary->format2($c)];
                 $ticks['volume'][] = $pair->secondary->format2($volume);
                 $ticks['times'][] = date('H:i', $time);
+                $ticks['times_full'][] = date('d.m.y H:i', $time);
             }
 
             $lastI = $time;
         }
 
-        $ticks['times'] = implode(':', $ticks['times']);
+        $ticks['times'] = implode('-', $ticks['times']);
 
         return response()->json([
             'result' => 'success',
             'ticker' => $ticks,
-            'max_price' => $pair->primary->format($maxPrice),
-            'min_price' => $pair->primary->format($minPrice),
-            'max_volume' => $maxVolume,
-            'min_volume' => $minVolume,
+            'max_price' => $pair->primary->format2($maxPrice),
+            'min_price' => $pair->primary->format2($minPrice),
+            'max_volume' => $pair->secondary->format2($maxVolume),
+            'min_volume' => $pair->secondary->format2($minVolume),
             'time_start' => $from,
-            'time_stop' => $lastI
+            'time_stop' => $lastI,
+            "extra" => date('d.m.Y H:i:s', $from) . ' - ' . date('d.m.Y H:i:s', $lastI)
         ]);
     }
 }
