@@ -27,7 +27,7 @@
         "jquery-validation": "^1.17.0",
         "jvectormap": "^2.0.4",
         "laravel-mix": "^1.0",
-        "lodash": "^4.17.13",
+        "lodash": "^4.17.19",
         "moment": "^2.18.1",
         "node-sass": "^4.10.0",
         "perfect-scrollbar": "^0.8.0",
